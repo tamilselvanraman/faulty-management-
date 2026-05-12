@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Class Management | EduPro ERP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#1b1b24",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f0ecf9",
+                        "on-error": "#ffffff",
+                        "primary-container": "#4f46e5",
+                        "tertiary-container": "#a44100",
+                        "on-tertiary-container": "#ffd2be",
+                        "error-container": "#ffdad6",
+                        "surface": "#fcf8ff",
+                        "surface-container-low": "#f5f2ff",
+                        "surface-container-highest": "#e4e1ee",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "surface-tint": "#4d44e3",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed": "#0f0069",
+                        "background": "#fcf8ff",
+                        "on-primary-container": "#dad7ff",
+                        "secondary-fixed-dim": "#c0c6db",
+                        "surface-bright": "#fcf8ff",
+                        "on-surface-variant": "#464555",
+                        "primary": "#3525cd",
+                        "secondary-fixed": "#dce2f7",
+                        "secondary": "#575e70",
+                        "on-tertiary-fixed": "#351000",
+                        "on-secondary-fixed": "#141b2b",
+                        "inverse-on-surface": "#f3effc",
+                        "surface-container-high": "#eae6f4",
+                        "on-background": "#1b1b24",
+                        "outline": "#777587",
+                        "surface-dim": "#dcd8e5",
+                        "secondary-container": "#d9dff5",
+                        "surface-variant": "#e4e1ee",
+                        "on-secondary-container": "#5c6274",
+                        "tertiary-fixed": "#ffdbcc",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "outline-variant": "#c7c4d8",
+                        "inverse-surface": "#302f39",
+                        "primary-fixed": "#e2dfff",
+                        "inverse-primary": "#c3c0ff",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "tertiary": "#7e3000",
+                        "on-secondary-fixed-variant": "#404758"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "md": "16px",
+                        "unit": "4px",
+                        "2xl": "48px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "gutter": "24px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "h3": ["Inter"],
+                        "h1": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-base": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "h3": ["18px", {"lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "h1": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "body-base": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 border-r sticky left-0 top-0 bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-800 flex flex-col py-6 gap-2 hidden md:flex z-50">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center">
+<img alt="College Logo" class="w-6 h-6" data-alt="minimalist academic crest logo with a graduation cap icon in white on a vibrant indigo background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDg2plOWgZrbvtdoVbzG4jwJCbaF6OGCTGGysF6f37d7DLVCKYKP0e18oiKiRhOMVDyylTA1u9FEOXOeHVGpUhlF7Hhr3ls3BRCWWxBsd8BPqQcl8qi0oJ7kN39nfunxF_gde2Q3OGqXENVGv11sSPzjbOlyMRFf9sNwz3ObjoKQJtv-kkalTG9xUBDTQLdN9HJ_k0XW8azXkIsUxeCtq5OPjZeQnmXQ0TVIam2-t9myRnJBXyJhBEC_L53KERLRmzmehhgIMIEFCPN"/>
+</div>
+<div>
+<h2 class="text-lg font-black text-gray-900 dark:text-white leading-none">Main Menu</h2>
+<p class="text-xs text-gray-500 mt-1 uppercase tracking-wider font-semibold">Academic Management</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-2 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2.5 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mx-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 ease-in-out font-sans text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- ACTIVE TAB: Classes -->
+<a class="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-gray-900 text-indigo-600 dark:text-indigo-400 shadow-sm rounded-lg mx-2 transition-all duration-200 ease-in-out font-sans text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="groups" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span>Classes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mx-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 ease-in-out font-sans text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+<span>Faculty</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mx-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 ease-in-out font-sans text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span>Timetable</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mx-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 ease-in-out font-sans text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Reports</span>
+</a>
+</nav>
+<div class="px-2 mt-auto pt-6 border-t border-gray-200 dark:border-gray-800">
+<a class="flex items-center gap-3 px-4 py-2.5 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mx-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 ease-in-out font-sans text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mx-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 ease-in-out font-sans text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<!-- TopNavBar -->
+<header class="w-full border-b sticky top-0 z-40 flex justify-between items-center px-8 py-3 bg-white/80 backdrop-blur-md border-gray-200 dark:border-gray-800 shadow-sm transition-opacity">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold text-indigo-600 dark:text-indigo-400 tracking-tight">EduPro ERP</span>
+<div class="relative hidden lg:block">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+<span class="material-symbols-outlined text-xl">search</span>
+</span>
+<input class="w-64 pl-10 pr-4 py-1.5 bg-gray-50 border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all" placeholder="Search resources..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-colors cursor-pointer">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-colors cursor-pointer">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-colors cursor-pointer">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-px bg-gray-200 dark:bg-gray-700 mx-1"></div>
+<div class="flex items-center gap-3 cursor-pointer">
+<img alt="Administrator Profile" class="w-8 h-8 rounded-full border border-indigo-100 object-cover" data-alt="professional portrait of a university administrator in business attire, clean modern office background, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYTjDRa9UH6-BON_ugvZfbq2dkbcUyO688kQiLKMZYtsNmmEEO7glwRR4MqYypVrt-68XYZU-ui0lRhsp-pKybePO3M_Z-l435qN2oWGfLriiC_rv01cYO-BzbkvBX_cGa59cfTznBr-2M9YXvEGWsW1l7VsgGZoaOHWtfFZNLYA1pKmkQgRDO1pR7P1oiox1yKopej1XuHaDHj4PJCPrTm5eSYaMIV1SVy2KlmjuFOdLU8MJdYKjf2SpuG-D416hO4Xc_eUUVdasT"/>
+<div class="hidden sm:block">
+<p class="text-sm font-semibold text-gray-900 dark:text-white leading-none">Admin User</p>
+<p class="text-[10px] text-gray-500 uppercase font-bold mt-1">Super Admin</p>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 p-xl">
+<!-- Page Header & CTA -->
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface">Class Management</h1>
+<p class="font-body-base text-body-sm text-on-surface-variant mt-1">Manage and track all academic class records across departments.</p>
+</div>
+<button class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-on-primary rounded-lg font-label-md text-label-md shadow-lg shadow-indigo-500/20 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+                        Add New Class
+                    </button>
+</div>
+<!-- Dashboard Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-8">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md">
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Total Classes</p>
+<div class="flex items-end justify-between">
+<h3 class="font-h1 text-h2 text-on-surface">42</h3>
+<span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">+4 this month</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md">
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Avg. Strength</p>
+<div class="flex items-end justify-between">
+<h3 class="font-h1 text-h2 text-on-surface">38</h3>
+<span class="text-xs font-bold text-on-surface-variant bg-gray-50 px-2 py-1 rounded-full">Capacity: 45</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md">
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Departments</p>
+<div class="flex items-end justify-between">
+<h3 class="font-h1 text-h2 text-on-surface">12</h3>
+<span class="text-xs font-bold text-on-surface-variant bg-gray-50 px-2 py-1 rounded-full">Core Engineering</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md">
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Active Faculty</p>
+<div class="flex items-end justify-between">
+<h3 class="font-h1 text-h2 text-on-surface">56</h3>
+<span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full">Full Time</span>
+</div>
+</div>
+</div>
+<!-- Table Card -->
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+<!-- Table Search & Filter Bar -->
+<div class="px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50">
+<div class="relative w-full sm:w-96">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 pointer-events-none">
+<span class="material-symbols-outlined text-lg">search</span>
+</span>
+<input class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white" placeholder="Filter by class, department or faculty..." type="text"/>
+</div>
+<div class="flex items-center gap-2 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+                                Filters
+                            </button>
+<button class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+<span class="material-symbols-outlined text-lg">download</span>
+                                Export
+                            </button>
+</div>
+</div>
+<!-- Main Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-gray-50/50">
+<th class="px-6 py-4 font-label-caps text-label-caps text-gray-500 uppercase tracking-wider">Class Name</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-gray-500 uppercase tracking-wider">Department</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-gray-500 uppercase tracking-wider">Academic Year</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-gray-500 uppercase tracking-wider">Strength</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-gray-500 uppercase tracking-wider">Faculty Advisor</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-gray-500 uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-gray-100">
+<tr class="hover:bg-gray-50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">CS</div>
+<div>
+<p class="font-label-md text-sm text-gray-900">B.Tech CS - Sec A</p>
+<p class="text-xs text-gray-400">ID: CLS-2024-001</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-gray-600">Computer Science</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">2023-2024</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-full bg-gray-100 rounded-full h-1.5 w-16">
+<div class="bg-green-500 h-1.5 rounded-full" style="width: 85%"></div>
+</div>
+<span class="text-sm font-medium text-gray-700">42/50</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="Faculty" class="w-6 h-6 rounded-full border border-gray-200" data-alt="close-up portrait of a male professor with glasses and a friendly smile, academic setting background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWOerzLHG9f-Tu98T1OxHJlRreim-bQ1yTdGj-F-CZ70PXnhq9e9WA2fBsL8HtXS51QbwjQILJCTstOAFllPcyA1ZW3Gm3AXsxt0aawCF2_mLhRXRXfEfVJuEVWdjn_lnErgj7gRXPYI39OrSdFqEXPEgf91WmtOSYhCq4SeNRFDVFguYWnzIRYTR0a7fn4F3zCorqv1QZ1ifVwLrAbrsSZ7SJF2wj5WOSRFHIjfQAUyDV3qoMUaAJk53umrFzT_ARWSb-pxsV8WJP"/>
+<span class="text-sm text-gray-700">Dr. Janardhan K.</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-gray-100 rounded-md transition-colors text-gray-400 hover:text-indigo-600">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-orange-50 text-orange-600 flex items-center justify-center font-bold text-xs">ME</div>
+<div>
+<p class="font-label-md text-sm text-gray-900">M.Tech Mech - SEM 2</p>
+<p class="text-xs text-gray-400">ID: CLS-2024-042</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-gray-600">Mechanical Engg.</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">2023-2024</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-full bg-gray-100 rounded-full h-1.5 w-16">
+<div class="bg-amber-500 h-1.5 rounded-full" style="width: 40%"></div>
+</div>
+<span class="text-sm font-medium text-gray-700">18/45</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="Faculty" class="w-6 h-6 rounded-full border border-gray-200" data-alt="professional portrait of a female lecturer with professional attire and focused expression, indoor library background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVmZBz_a6-P5HVtNTpdyPGcQ-WG9TpOBamyUdUjXZcnXMBy20KDk_ZikrL6viJwLMJdYXMp7LkWqO-E6lL-aOKno9FXKCFrHwkR9YoTEZpKfklzbU3XKJiVmuIfPVKy2r87UtIqfMwrFneP_9r44J3aZ9vlDy-HQeNLciIP-YYIJFmuC4oIUClRnDwmMtIVsHd2MVjGp0JD076p9MwByOxDIt_wqatoS7wwEoEmZPI-GwLaPmqxIh41W4Q4_EylO__veu0qxZs5hte"/>
+<span class="text-sm text-gray-700">Prof. Sarala P.</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-gray-100 rounded-md transition-colors text-gray-400 hover:text-indigo-600">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-xs">EE</div>
+<div>
+<p class="font-label-md text-sm text-gray-900">B.Tech EEE - Year 3</p>
+<p class="text-xs text-gray-400">ID: CLS-2024-015</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-gray-600">Electrical &amp; Electronics</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">2023-2024</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-full bg-gray-100 rounded-full h-1.5 w-16">
+<div class="bg-indigo-500 h-1.5 rounded-full" style="width: 70%"></div>
+</div>
+<span class="text-sm font-medium text-gray-700">35/50</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="Faculty" class="w-6 h-6 rounded-full border border-gray-200" data-alt="portrait of a senior professor with silver hair and a sharp business suit, boardroom background with warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1OGU-098dKbfwmIjBviyJ-ugf7osoxPqN63NBcJzl20krckxUd_mOWk_tfcakO3jWu1Pq9t3540O6a2mGQEdUK9slEV-Z7lf2UZxQEYuwukRQxbu1PAmFcIQXN7gJFQvatGllAHhhSbFIVe28nuz7t-sl0mjmiq8TZmHkSfZ8nkE8S3-4SRsiQIAmz3cRUNpC45iW04UUUd199UWV6trutimPANn3Ets53hKTtZRDcpBtzC7Grqn0K0LtMH8nNzhvYVqbKvB_Mlil"/>
+<span class="text-sm text-gray-700">Dr. Rajesh N.</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-gray-100 rounded-md transition-colors text-gray-400 hover:text-indigo-600">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-xs">BT</div>
+<div>
+<p class="font-label-md text-sm text-gray-900">B.Sc Biotech - Sec B</p>
+<p class="text-xs text-gray-400">ID: CLS-2024-009</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-gray-600">Biotechnology</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">2023-2024</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-full bg-gray-100 rounded-full h-1.5 w-16">
+<div class="bg-rose-500 h-1.5 rounded-full" style="width: 95%"></div>
+</div>
+<span class="text-sm font-medium text-gray-700">28/30</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="Faculty" class="w-6 h-6 rounded-full border border-gray-200" data-alt="professional woman in lab coat, scientific laboratory background with equipment in soft focus, bright clinical lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_UOP-83dyUExCPbaaVcJLwW8e-lEblIva62MWWt8GWfa6g3Q4XK2QrxRrA1YDQ3WE-ts1FG3EBiff87BKWG6W5AWBguEuGpXaB4JG4EHzA67B7-balhJrfv1ANvnbQyWhfaSiPzmQi9LnP866cf33Z2KkFEGd57IB8ADQuqLl4rApznQigncYU9zxEc_yGLRnYSEXY7lKv4mESYLQXUHYh4TmXuCO-am9bXEMoXGKr49MMfi1lzA_hcYeApiAIcunyhlUnKTScgTo"/>
+<span class="text-sm text-gray-700">Ms. Lavanya V.</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-gray-100 rounded-md transition-colors text-gray-400 hover:text-indigo-600">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-white">
+<p class="text-sm text-gray-500 font-medium">Showing <span class="text-gray-900">1</span> to <span class="text-gray-900">4</span> of <span class="text-gray-900">42</span> classes</p>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 border border-gray-200 rounded-md text-sm font-medium text-gray-400 cursor-not-allowed">Previous</button>
+<button class="px-3 py-1.5 bg-indigo-600 text-white rounded-md text-sm font-medium">1</button>
+<button class="px-3 py-1.5 border border-gray-200 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50">2</button>
+<button class="px-3 py-1.5 border border-gray-200 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50">3</button>
+<span class="px-2 text-gray-400">...</span>
+<button class="px-3 py-1.5 border border-gray-200 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50">11</button>
+<button class="px-3 py-1.5 border border-gray-200 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50">Next</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

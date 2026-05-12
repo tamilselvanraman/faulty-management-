@@ -1,26 +1,134 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: #3525cd;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #4f46e5;
+  --color-on-primary-container: #dad7ff;
+  --color-primary-fixed: #e2dfff;
+  --color-on-primary-fixed: #0f0069;
+  
+  --color-secondary: #575e70;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d9dff5;
+  --color-on-secondary-container: #5c6274;
+  
+  --color-tertiary: #7e3000;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #a44100;
+  --color-on-tertiary-container: #ffd2be;
+  
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  
+  --color-background: #fcf8ff;
+  --color-on-background: #1b1b24;
+  
+  --color-surface: #fcf8ff;
+  --color-on-surface: #1b1b24;
+  --color-surface-variant: #e4e1ee;
+  --color-on-surface-variant: #464555;
+  
+  --color-outline: #777587;
+  --color-outline-variant: #c7c4d8;
+  
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f2ff;
+  --color-surface-container: #f0ecf9;
+  --color-surface-container-high: #eae6f4;
+  --color-surface-container-highest: #e4e1ee;
+
+  --font-sans: var(--font-inter), "Inter", sans-serif;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-gutter: 24px;
+  --spacing-container-max: 1440px;
+
+  /* Typography Scale from design */
+  --font-size-h1: 36px;
+  --font-weight-h1: 700;
+  --line-height-h1: 1.2;
+  --letter-spacing-h1: -0.02em;
+
+  --font-size-h2: 24px;
+  --font-weight-h2: 600;
+  --line-height-h2: 1.3;
+  --letter-spacing-h2: -0.01em;
+
+  --font-size-h3: 18px;
+  --font-weight-h3: 600;
+  --line-height-h3: 1.4;
+  --letter-spacing-h3: -0.01em;
+
+  --font-size-body-base: 16px;
+  --font-weight-body-base: 400;
+  --line-height-body-base: 1.6;
+
+  --font-size-body-sm: 14px;
+  --font-weight-body-sm: 400;
+  --line-height-body-sm: 1.5;
+
+  --font-size-label-md: 14px;
+  --font-weight-label-md: 500;
+  --line-height-label-md: 1;
+  --letter-spacing-label-md: 0.01em;
+
+  --font-size-label-caps: 12px;
+  --font-weight-label-caps: 600;
+  --line-height-label-caps: 1;
+  --letter-spacing-label-caps: 0.05em;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply bg-background text-on-surface font-sans antialiased;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .font-h1 { font-size: var(--font-size-h1); font-weight: var(--font-weight-h1); line-height: var(--line-height-h1); letter-spacing: var(--letter-spacing-h1); }
+  .font-h2 { font-size: var(--font-size-h2); font-weight: var(--font-weight-h2); line-height: var(--line-height-h2); letter-spacing: var(--letter-spacing-h2); }
+  .font-h3 { font-size: var(--font-size-h3); font-weight: var(--font-weight-h3); line-height: var(--line-height-h3); letter-spacing: var(--letter-spacing-h3); }
+  .font-body-base { font-size: var(--font-size-body-base); font-weight: var(--font-weight-body-base); line-height: var(--line-height-body-base); }
+  .font-body-sm { font-size: var(--font-size-body-sm); font-weight: var(--font-weight-body-sm); line-height: var(--line-height-body-sm); }
+  .font-label-md { font-size: var(--font-size-label-md); font-weight: var(--font-weight-label-md); line-height: var(--line-height-label-md); letter-spacing: var(--letter-spacing-label-md); }
+  .font-label-caps { font-size: var(--font-size-label-caps); font-weight: var(--font-weight-label-caps); line-height: var(--line-height-label-caps); letter-spacing: var(--letter-spacing-label-caps); text-transform: uppercase; }
+  
+  .text-h1 { font-size: var(--font-size-h1); }
+  .text-h2 { font-size: var(--font-size-h2); }
+  .text-h3 { font-size: var(--font-size-h3); }
+  .text-body-base { font-size: var(--font-size-body-base); }
+  .text-body-sm { font-size: var(--font-size-body-sm); }
+  .text-label-md { font-size: var(--font-size-label-md); }
+  .text-label-caps { font-size: var(--font-size-label-caps); }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #E5E7EB;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #D1D5DB;
+  }
 }
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+

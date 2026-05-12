@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Faculty Profile | EduCore ERP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#f0ecf9",
+                        "secondary": "#575e70",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#d9dff5",
+                        "surface-container-high": "#eae6f4",
+                        "error": "#ba1a1a",
+                        "tertiary": "#7e3000",
+                        "outline": "#777587",
+                        "primary-fixed": "#e2dfff",
+                        "on-background": "#1b1b24",
+                        "tertiary-container": "#a44100",
+                        "on-primary-fixed": "#0f0069",
+                        "on-primary": "#ffffff",
+                        "surface-tint": "#4d44e3",
+                        "outline-variant": "#c7c4d8",
+                        "on-secondary-fixed-variant": "#404758",
+                        "on-tertiary-fixed": "#351000",
+                        "primary": "#3525cd",
+                        "surface": "#fcf8ff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "tertiary-fixed": "#ffdbcc",
+                        "on-primary-container": "#dad7ff",
+                        "background": "#fcf8ff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#dce2f7",
+                        "surface-container-highest": "#e4e1ee",
+                        "surface-variant": "#e4e1ee",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-secondary-container": "#5c6274",
+                        "surface-dim": "#dcd8e5",
+                        "inverse-primary": "#c3c0ff",
+                        "primary-container": "#4f46e5",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#c0c6db",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f5f2ff",
+                        "surface-bright": "#fcf8ff",
+                        "on-secondary-fixed": "#141b2b",
+                        "inverse-on-surface": "#f3effc",
+                        "on-surface": "#1b1b24",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "on-surface-variant": "#464555",
+                        "inverse-surface": "#302f39",
+                        "on-tertiary-container": "#ffd2be"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "xs": "4px",
+                        "unit": "4px",
+                        "xl": "32px",
+                        "2xl": "48px",
+                        "container-max": "1440px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-base": ["Inter"],
+                        "h2": ["Inter"],
+                        "h3": ["Inter"],
+                        "h1": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "body-base": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "h3": ["18px", {"lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "h1": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-base">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-40 flex items-center justify-between px-8 h-16 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-8">
+<h1 class="text-xl font-bold tracking-tight text-indigo-600 dark:text-indigo-400">EduCore ERP</h1>
+<div class="hidden md:flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-1.5 gap-2">
+<span class="material-symbols-outlined text-slate-400">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-64 text-slate-600" placeholder="Search faculty, students, courses..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-px bg-slate-200 mx-2"></div>
+<img alt="Administrator Avatar" class="w-8 h-8 rounded-full border border-slate-200" data-alt="Professional headshot of a middle-aged male administrator with a confident smile in a bright office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApLEUFnupMfMTvcg-96LI2WQRqeL8tMH1s__nlDCYKFq-kUYDavxJlCMe8wZxGLfoj-XQb5EB6R-RtVolsR1Y5-P35uojDhf66snZFNJBOaQnE7k3Z9Nphw5nYqP7eL07Ve7rNWdC_dnZSTOGdfkR7zwDkJq_c9Mcbc02PPgcdWCWm_Vaf4Rb-3uP_App8WzPaZQUqC4RN5Yt9KJMl6g-sUsp3wDAIRdiwAdk-bn4tPb_FUrqWl_9VD__8ZCY3R-xO_lBuyZFtnRxq"/>
+</div>
+</header>
+<div class="flex min-h-[calc(100vh-64px)]">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hidden md:flex flex-col p-4 gap-y-1">
+<div class="mb-6 px-3">
+<p class="text-[13px] font-medium text-slate-500 uppercase tracking-wider">Main Navigation</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-3 py-2 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium text-[13px] Inter">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded-lg px-3 py-2 border-l-4 border-indigo-600 transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-medium text-[13px] Inter">Faculty Management</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-3 py-2 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-medium text-[13px] Inter">Student Management</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-3 py-2 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">class</span>
+<span class="font-medium text-[13px] Inter">Class Management</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-3 py-2 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-medium text-[13px] Inter">Events &amp; Scheduling</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-3 py-2 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">diversity_3</span>
+<span class="font-medium text-[13px] Inter">Committees</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-3 py-2 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">task_alt</span>
+<span class="font-medium text-[13px] Inter">Task Tracking</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-3 py-2 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-medium text-[13px] Inter">Analytics</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-slate-100">
+<button class="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white rounded-lg py-2.5 text-[13px] font-semibold hover:bg-indigo-700 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>New Faculty Member</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 p-8">
+<div class="max-w-6xl mx-auto">
+<!-- Breadcrumbs & Actions -->
+<div class="flex justify-between items-center mb-8">
+<div>
+<nav class="flex items-center gap-2 text-sm text-slate-500 mb-1">
+<span class="hover:text-indigo-600 cursor-pointer">Faculty</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-indigo-600 font-medium">Dr. Elena Rodriguez</span>
+</nav>
+<h2 class="font-h1 text-h1 text-on-surface">Faculty Profile</h2>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-white border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container transition-colors font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined">edit</span>
+                            Edit Profile
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg hover:opacity-90 transition-opacity font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined">download</span>
+                            Export Dossier
+                        </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Basic Info -->
+<div class="lg:col-span-4 space-y-8">
+<div class="bg-white rounded-xl border border-outline-variant p-8 text-center shadow-sm">
+<div class="relative inline-block mb-6">
+<img alt="Faculty Photo" class="w-32 h-32 rounded-2xl object-cover border-4 border-surface-container mx-auto" data-alt="Professional portrait of a female professor with glasses, confident expression, soft academic office background lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2HIMuqw2v6mJlCz_bIjNc-rVkYqQLAl2aI_nEd9qIL3zdyQI-oGFwG4Q1g6HilFxFGbLtaMtseABPRUJICabmiY_iJJf7mE2ntT4Lsd41cvnV8nBOwnKbEYpzHuwBTteDtVxtWdRggE7vfY40ylnxn3wlb6d1_dbLzTADYgCeHBiGAkzujT8jbsWP9argY3FC-57870MWsSvCu4NvgW1Nas9L2wGMpUk88YK1bM74OMJPoeld018AqiXnIx70IOaYqQBxyCD_iBAu"/>
+<span class="absolute -bottom-2 -right-2 bg-green-500 border-4 border-white w-6 h-6 rounded-full" title="Currently Active"></span>
+</div>
+<h3 class="font-h2 text-h2 mb-1">Dr. Elena Rodriguez</h3>
+<p class="text-secondary font-label-md text-label-md mb-6 uppercase tracking-wider">Senior Professor • PhD in Physics</p>
+<div class="flex justify-center gap-3 mb-8">
+<span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full border border-green-100">Permanent</span>
+<span class="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-full border border-indigo-100">Full-time</span>
+</div>
+<div class="space-y-4 text-left border-t border-slate-100 pt-6">
+<div class="flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined text-indigo-600">badge</span>
+<span class="text-sm font-medium">Emp ID: #EDU-7742</span>
+</div>
+<div class="flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined text-indigo-600">calendar_today</span>
+<span class="text-sm font-medium">Joined: Aug 12, 2018</span>
+</div>
+<div class="flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined text-indigo-600">location_on</span>
+<span class="text-sm font-medium">Building A, Room 402</span>
+</div>
+</div>
+</div>
+<!-- Statistics Card -->
+<div class="bg-indigo-600 rounded-xl p-6 text-white shadow-lg overflow-hidden relative">
+<div class="relative z-10">
+<h4 class="font-label-caps text-label-caps mb-4 opacity-80 uppercase">Performance Summary</h4>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-2xl font-bold">4.8/5</p>
+<p class="text-[10px] uppercase opacity-70">Student Rating</p>
+</div>
+<div>
+<p class="text-2xl font-bold">12</p>
+<p class="text-[10px] uppercase opacity-70">Research Papers</p>
+</div>
+</div>
+</div>
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-6xl">query_stats</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Detailed Info -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Department & Designation Detail -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+<div class="px-6 py-4 border-b border-outline-variant bg-slate-50/50 flex justify-between items-center">
+<h4 class="font-h3 text-h3 text-indigo-900 flex items-center gap-2">
+<span class="material-symbols-outlined text-indigo-600">assignment_ind</span>
+                                    Academic Appointment
+                                </h4>
+<span class="text-xs font-semibold text-slate-400">LAST UPDATED: JAN 2024</span>
+</div>
+<div class="p-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-6">
+<div>
+<p class="text-[11px] font-bold text-slate-400 uppercase mb-1">Department</p>
+<p class="font-body-base font-semibold text-on-surface">Applied Physical Sciences &amp; Research</p>
+</div>
+<div>
+<p class="text-[11px] font-bold text-slate-400 uppercase mb-1">Current Designation</p>
+<p class="font-body-base font-semibold text-on-surface">Head of Quantum Mechanics Research Lab</p>
+</div>
+</div>
+<div class="space-y-6">
+<div>
+<p class="text-[11px] font-bold text-slate-400 uppercase mb-1">Direct Contact</p>
+<p class="font-body-base font-semibold text-on-surface">elena.rodriguez@educore.edu</p>
+</div>
+<div>
+<p class="text-[11px] font-bold text-slate-400 uppercase mb-1">Office Extension</p>
+<p class="font-body-base font-semibold text-on-surface">+1 (555) 012-4432</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Subjects Handled -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+<div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center">
+<h4 class="font-h3 text-h3 text-indigo-900 flex items-center gap-2">
+<span class="material-symbols-outlined text-indigo-600">menu_book</span>
+                                    Subjects Handled
+                                </h4>
+<button class="text-indigo-600 text-sm font-semibold hover:underline">View All History</button>
+</div>
+<div class="p-0">
+<table class="w-full text-left">
+<thead class="bg-slate-50/50">
+<tr>
+<th class="px-6 py-3 font-label-caps text-label-caps text-slate-500 uppercase">Course Code</th>
+<th class="px-6 py-3 font-label-caps text-label-caps text-slate-500 uppercase">Subject Name</th>
+<th class="px-6 py-3 font-label-caps text-label-caps text-slate-500 uppercase text-center">Batches</th>
+<th class="px-6 py-3 font-label-caps text-label-caps text-slate-500 uppercase text-right">Credits</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4 font-mono text-sm text-indigo-600">PHY-401</td>
+<td class="px-6 py-4 font-medium">Advanced Quantum Mechanics</td>
+<td class="px-6 py-4 text-center">02</td>
+<td class="px-6 py-4 text-right font-semibold">4.0</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4 font-mono text-sm text-indigo-600">PHY-205</td>
+<td class="px-6 py-4 font-medium">Thermodynamics &amp; Statistical Mechanics</td>
+<td class="px-6 py-4 text-center">03</td>
+<td class="px-6 py-4 text-right font-semibold">3.0</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4 font-mono text-sm text-indigo-600">RES-901</td>
+<td class="px-6 py-4 font-medium">Research Methodology for Scientists</td>
+<td class="px-6 py-4 text-center">01</td>
+<td class="px-6 py-4 text-right font-semibold">2.0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Responsibilities Detailed Section -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+<div class="px-6 py-4 border-b border-outline-variant">
+<h4 class="font-h3 text-h3 text-indigo-900 flex items-center gap-2">
+<span class="material-symbols-outlined text-indigo-600">verified_user</span>
+                                    Administrative &amp; Research Responsibilities
+                                </h4>
+</div>
+<div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface-container rounded-xl p-5 border border-outline-variant/30">
+<div class="flex items-start gap-4">
+<div class="bg-white p-2 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-indigo-600">science</span>
+</div>
+<div>
+<h5 class="font-semibold text-indigo-900 mb-1">Research Lead</h5>
+<p class="text-sm text-secondary">Directing the 'Sub-Atomic Interactions' project funded by the National Science Foundation.</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container rounded-xl p-5 border border-outline-variant/30">
+<div class="flex items-start gap-4">
+<div class="bg-white p-2 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-indigo-600">groups_3</span>
+</div>
+<div>
+<h5 class="font-semibold text-indigo-900 mb-1">Curriculum Committee</h5>
+<p class="text-sm text-secondary">Member of the board responsible for redesigning the Physics Undergraduate syllabus for 2025.</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container rounded-xl p-5 border border-outline-variant/30">
+<div class="flex items-start gap-4">
+<div class="bg-white p-2 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-indigo-600">school</span>
+</div>
+<div>
+<h5 class="font-semibold text-indigo-900 mb-1">PhD Mentor</h5>
+<p class="text-sm text-secondary">Currently supervising 5 doctoral candidates in their thesis development and publications.</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container rounded-xl p-5 border border-outline-variant/30">
+<div class="flex items-start gap-4">
+<div class="bg-white p-2 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-indigo-600">event_note</span>
+</div>
+<div>
+<h5 class="font-semibold text-indigo-900 mb-1">Event Coordinator</h5>
+<p class="text-sm text-secondary">Primary organizer for the Annual University Science Symposium (AUSS) 2024.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
