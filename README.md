@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EduCore ERP - Faculty & Management System
 
-## Getting Started
+EduCore is a modern, high-performance ERP (Enterprise Resource Planning) system designed for educational institutions. It streamlines the management of faculty, students, committees, and academic schedules with a focus on visual excellence and user experience.
 
-First, run the development server:
+![EduCore Dashboard](https://github.com/TamilselvanRaman/faulty-Management-/raw/main/public/dashboard-preview.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🏛️ Committee Management
+- **Dynamic Oversight:** Track and manage various academic and administrative committees.
+- **Categorization:** Color-coded categories for easy identification (Technical, Cultural, Sports, etc.).
+- **Member Tracking:** Manage committee members, roles, and status.
+- **Filtering:** Powerful search and filter capabilities by category and status.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 📅 Event Management
+- **Integrated Calendar:** Powered by FullCalendar for monthly, weekly, and daily views.
+- **Scheduling:** Effortlessly plan and coordinate institution-wide events.
+- **Real-time Updates:** Stay informed with toast notifications and dynamic UI updates.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 👨‍🏫 Faculty & Student Portals
+- **Directory:** Comprehensive directories for faculty members and students.
+- **Profile Management:** Detailed views for performance tracking and administrative records.
+- **Rankings:** Integrated ranking systems for academic and extracurricular achievements.
 
-## Learn More
+### 📊 Advanced Analytics
+- **Data Visualization:** Interactive charts and dashboards powered by Recharts.
+- **Task Tracking:** Kanban-style task management for administrative staff.
+- **Timetable Management:** Dynamic scheduling for classes and lecture halls.
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Technology Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Core:** [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://reactjs.org/)
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/)
+- **Backend/Database:** [Supabase](https://supabase.com/)
+- **Animations:** [Framer Motion](https://www.framer.com/motion/)
+- **Icons:** [Lucide React](https://lucide.dev/) & [Material Symbols](https://fonts.google.com/icons)
+- **Data Handling:** [Zod](https://zod.dev/) (Validation), [PapaParse](https://www.papaparse.com/) (CSV)
+- **UI Components:** Custom glassmorphic components with dynamic themes.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📦 Installation
 
-## Deploy on Vercel
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/TamilselvanRaman/faulty-Management-.git
+   cd faulty-Management-
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Set up Environment Variables:**
+   Create a `.env.local` file in the root directory and add your Supabase credentials:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+Built with ❤️ by [Tamilselvan Raman](https://github.com/TamilselvanRaman)
