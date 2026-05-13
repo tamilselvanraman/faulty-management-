@@ -192,7 +192,6 @@ export default function TopBar({ onMobileMenuOpen }: TopBarProps) {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
         </div>
       </div>
     </header>

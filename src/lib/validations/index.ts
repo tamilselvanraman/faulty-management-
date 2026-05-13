@@ -21,7 +21,7 @@ export const studentSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   roll_number: z.string().min(1, 'Roll number is required'),
   department: z.string().min(1, 'Department is required'),
-  year: z.string().min(1, 'Year is required'), -- Changed to string (I, II, III, IV)
+  year: z.string().min(1, 'Year is required'), // Changed to string (I, II, III, IV)
   section: z.string().optional().or(z.literal('')),
   class_id: z.string().uuid().optional().or(z.literal('')),
   phone: z.string().optional().or(z.literal('')),
