@@ -50,44 +50,44 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {/* Main content */}
         <div className="flex flex-col flex-1 min-w-0 transition-all duration-300 relative">
           {/* Top Header */}
-          <header className="h-20 bg-surface/80 backdrop-blur-md border-b border-outline flex items-center justify-between px-6 lg:px-10 sticky top-0 z-10">
-            <div className="flex items-center gap-4">
+          <header className="h-20 bg-surface/60 backdrop-blur-xl border-b border-outline/50 flex items-center justify-between px-6 lg:px-10 sticky top-0 z-30 transition-all duration-300">
+            <div className="flex items-center gap-6">
               <button
                 onClick={() => setMobileSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-xl hover:bg-surface-variant text-on-surface-variant transition-colors"
+                className="lg:hidden p-2.5 rounded-2xl bg-surface shadow-sm border border-outline/50 text-slate-600 hover:bg-slate-50 transition-all active:scale-95"
               >
                 <Menu size={20} />
               </button>
               
-              <div className="hidden md:flex items-center gap-3 bg-surface-variant/50 px-4 py-2.5 rounded-2xl border border-outline-variant w-80 group focus-within:border-primary/30 transition-all">
-                <Search size={18} className="text-on-surface-variant/40 group-focus-within:text-primary transition-colors" />
+              <div className="hidden md:flex items-center gap-3 bg-slate-100/50 px-5 py-3 rounded-2xl border border-transparent focus-within:border-primary/20 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-primary/5 w-96 group transition-all duration-500">
+                <Search size={18} className="text-slate-400 group-focus-within:text-primary transition-colors" />
                 <input 
                   type="text" 
-                  placeholder="Search anything..." 
-                  className="bg-transparent border-none outline-none text-sm font-medium w-full placeholder:text-on-surface-variant/30"
+                  placeholder="Global search..." 
+                  className="bg-transparent border-none outline-none text-[14px] font-bold w-full placeholder:text-slate-300 text-slate-700"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-2 lg:gap-6">
-              <div className="flex items-center gap-1 lg:gap-3 mr-2 lg:mr-0">
-                <button className="p-2.5 rounded-2xl hover:bg-surface-variant text-on-surface-variant transition-all relative group">
+            <div className="flex items-center gap-3 lg:gap-5">
+              <div className="flex items-center gap-2">
+                <button className="p-3 rounded-2xl bg-surface border border-outline/50 hover:bg-slate-50 text-slate-500 hover:text-slate-900 transition-all relative group shadow-sm">
                   <Bell size={20} />
-                  <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-tertiary rounded-full border-2 border-surface" />
+                  <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-surface animate-pulse" />
                 </button>
               </div>
 
-              <div className="h-8 w-px bg-outline hidden lg:block" />
+              <div className="h-8 w-px bg-outline/50 hidden lg:block" />
 
-              <button className="flex items-center gap-3 pl-2 pr-4 py-1.5 rounded-2xl hover:bg-surface-variant transition-all border border-transparent hover:border-outline-variant group">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-indigo-700 flex items-center justify-center text-white shadow-lg shadow-primary/20">
+              <button className="flex items-center gap-3 pl-2 pr-5 py-1.5 rounded-[20px] bg-surface border border-outline/50 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-indigo-700 flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
                   <User size={20} />
                 </div>
                 <div className="hidden lg:block text-left">
-                  <p className="text-[13px] font-black text-on-surface leading-tight">Admin User</p>
-                  <p className="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-wider mt-0.5">Super Admin</p>
+                  <p className="text-[13px] font-black text-slate-900 leading-tight">Admin User</p>
+                  <p className="text-[10px] font-black text-primary uppercase tracking-widest mt-0.5">Super Admin</p>
                 </div>
-                <ChevronDown size={14} className="text-on-surface-variant/40 group-hover:text-on-surface transition-colors hidden lg:block" />
+                <ChevronDown size={14} className="text-slate-300 group-hover:text-slate-600 transition-colors hidden lg:block" />
               </button>
             </div>
           </header>

@@ -352,7 +352,7 @@ export default function StudentsPage() {
             className="space-y-6 px-4"
           >
             {/* Search & Bulk Row */}
-            <div className="flex flex-col md:flex-row gap-4 items-center bg-white/80 backdrop-blur-md p-4 rounded-3xl border border-[#E5E7EB] shadow-sm sticky top-4 z-10">
+            <div className="flex flex-col md:flex-row gap-4 items-center bg-white/80 backdrop-blur-md p-4 rounded-3xl border border-[#E5E7EB] shadow-sm relative z-10">
               <div className="flex-1 flex items-center gap-3 bg-gray-50 px-5 py-3 rounded-2xl border border-transparent focus-within:border-indigo-200 focus-within:bg-white transition-all w-full shadow-inner">
                 <Search size={20} className="text-gray-400" />
                 <input 
