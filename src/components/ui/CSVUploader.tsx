@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import Papa from 'papaparse'
-import { Upload, X, FileText, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Upload, X, FileText, CheckCircle2, AlertCircle, Download } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface CSVUploaderProps {
@@ -134,17 +134,37 @@ export default function CSVUploader({ onUpload, onClose, sampleHeaders }: CSVUpl
           )}
         </div>
 
-        <div className="p-4 border-t border-gray-100 flex justify-end gap-2 bg-gray-50">
-          <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
-            Cancel
-          </button>
-          <button 
-            disabled={!file || !!error || data.length === 0}
-            onClick={() => onUpload(data)}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white rounded-lg text-sm font-medium shadow-sm transition-all"
-          >
-            Import Data
-          </button>
+        <div className="p-4 border-t border-gray-100 flex justify-between items-center gap-2 bg-gray-50">
+          {sampleHeaders && (
+            <button
+              onClick={() => {
+                const csv = sampleHeaders.join(',') + '\n' + sampleHeaders.map(h => `example_${h}`).join(',')
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+                const url = window.URL.createObjectURL(blob)
+                const link = document.createElement('a')
+                link.href = url
+                link.setAttribute('download', `import_template_${new Date().getTime()}.csv`)
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all border border-indigo-100 hover:border-indigo-200 shadow-sm active:scale-95"
+            >
+              <Download size={14} /> Download Sample Format
+            </button>
+          )}
+          <div className="flex gap-2">
+            <button onClick={onClose} className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-800 transition-colors">
+              Cancel
+            </button>
+            <button 
+              disabled={!file || !!error || data.length === 0}
+              onClick={() => onUpload(data)}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white rounded-lg text-sm font-medium shadow-sm transition-all"
+            >
+              Import Data
+            </button>
+          </div>
         </div>
       </motion.div>
     </motion.div>

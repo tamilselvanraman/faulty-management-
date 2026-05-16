@@ -42,7 +42,7 @@ const MOCK_ENTRIES: TimetableEntry[] = [
   { id: '8', day: 'Friday', start_time: '11:00', end_time: '12:00', subject: 'Structural Analysis', faculty_name: 'Dr. Kavitha Rajan', room: 'CIVIL-201', department: 'Civil', year: 3 },
 ]
 
-const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] } }) }
+const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }) }
 
 export default function TimetablePage() {
   const [entries, setEntries] = useState<TimetableEntry[]>(MOCK_ENTRIES)

@@ -15,7 +15,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   const supabase = await createClient()
   const body = await request.json()
   const parsed = eventSchema.partial().safeParse(body)
-  if (!parsed.success) return NextResponse.json({ data: null, error: parsed.error.errors[0].message }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ data: null, error: parsed.error.issues[0].message }, { status: 400 })
   const { data, error } = await supabase.from('events').update(parsed.data).eq('id', id).select().single()
   if (error) return NextResponse.json({ data: null, error: error.message }, { status: 500 })
   return NextResponse.json({ data, error: null })

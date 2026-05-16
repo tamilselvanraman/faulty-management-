@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, CheckCircle2, Clock, AlertCircle, Circle, X, Edit2, Trash2, Flag, ChevronDown, Filter } from 'lucide-react'
+import { Plus, CheckCircle2, Clock, AlertCircle, Circle, X, Edit2, Trash2, Flag, ChevronDown, Filter, User, Calendar, AlertTriangle, Upload } from 'lucide-react'
 import toast from 'react-hot-toast'
+import CSVUploader from '@/components/ui/CSVUploader'
 
 interface Task {
   id: string
@@ -17,11 +18,11 @@ interface Task {
   created_at: string
 }
 
-const PRIORITY_STYLES: Record<string, { bg: string; text: string; icon: string }> = {
-  low: { bg: 'bg-gray-50', text: 'text-gray-500', icon: '🟢' },
-  medium: { bg: 'bg-blue-50', text: 'text-blue-600', icon: '🔵' },
-  high: { bg: 'bg-amber-50', text: 'text-amber-600', icon: '🟡' },
-  urgent: { bg: 'bg-red-50', text: 'text-red-600', icon: '🔴' },
+const PRIORITY_STYLES: Record<string, { bg: string; text: string; icon: React.ReactNode }> = {
+  low: { bg: 'bg-gray-50', text: 'text-gray-500', icon: <Circle size={10} className="fill-current text-gray-500" /> },
+  medium: { bg: 'bg-blue-50', text: 'text-blue-600', icon: <Circle size={10} className="fill-current text-blue-600" /> },
+  high: { bg: 'bg-amber-50', text: 'text-amber-600', icon: <Circle size={10} className="fill-current text-amber-600" /> },
+  urgent: { bg: 'bg-red-50', text: 'text-red-600', icon: <Circle size={10} className="fill-current text-red-600" /> },
 }
 
 const STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
@@ -42,7 +43,7 @@ const MOCK_TASKS: Task[] = [
 ]
 
 const STATUS_LABELS = ['all', 'pending', 'in_progress', 'completed', 'cancelled']
-const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] } }) }
+const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }) }
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>(MOCK_TASKS)
@@ -51,6 +52,7 @@ export default function TasksPage() {
   const [showModal, setShowModal] = useState(false)
   const [editItem, setEditItem] = useState<Task | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [showCSV, setShowCSV] = useState(false)
 
   const filtered = tasks.filter(t => {
     const matchStatus = filterStatus === 'all' || t.status === filterStatus
@@ -75,6 +77,19 @@ export default function TasksPage() {
     setEditItem(null)
   }
 
+  const handleBulkUpload = (data: any[]) => {
+    const newTasks = data.map(item => ({
+      ...item,
+      id: Math.random().toString(36).substr(2, 9),
+      status: item.status || 'pending',
+      priority: item.priority || 'medium',
+      created_at: new Date().toISOString().split('T')[0]
+    }))
+    setTasks(prev => [...newTasks, ...prev])
+    setShowCSV(false)
+    toast.success(`${newTasks.length} tasks imported successfully`)
+  }
+
   const counts = {
     pending: tasks.filter(t => t.status === 'pending').length,
     in_progress: tasks.filter(t => t.status === 'in_progress').length,
@@ -93,10 +108,35 @@ export default function TasksPage() {
           <h1 className="text-2xl font-bold text-gray-900">Task Management</h1>
           <p className="text-sm text-gray-500 mt-0.5">{counts.in_progress} in progress · {counts.pending} pending · {counts.urgent > 0 && <span className="text-red-500 font-semibold">{counts.urgent} urgent</span>}</p>
         </div>
-        <button onClick={() => { setEditItem(null); setShowModal(true) }}
-          className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-500/20 flex-shrink-0">
-          <Plus size={16} /> Add Task
-        </button>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => {
+              const headers = ['title', 'description', 'assigned_to', 'due_date', 'priority', 'category']
+              const csv = headers.join(',') + '\n' + headers.map(h => `example_${h}`).join(',')
+              const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+              const url = window.URL.createObjectURL(blob)
+              const link = document.createElement('a')
+              link.href = url
+              link.setAttribute('download', 'tasks_import_template.csv')
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl text-sm font-semibold shadow-sm flex-shrink-0 transition-colors"
+          >
+            <Download size={16} className="text-indigo-600" /> Format
+          </button>
+          <button 
+            onClick={() => setShowCSV(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl text-sm font-semibold shadow-sm flex-shrink-0 transition-colors"
+          >
+            <Upload size={16} className="text-indigo-600" /> Import
+          </button>
+          <button onClick={() => { setEditItem(null); setShowModal(true) }}
+            className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-500/20 flex-shrink-0">
+            <Plus size={16} /> Add Task
+          </button>
+        </div>
       </motion.div>
 
       {/* Stats */}
@@ -157,15 +197,15 @@ export default function TasksPage() {
                     <p className={`text-sm font-semibold ${task.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-900'}`}>
                       {task.title}
                     </p>
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${priority.bg} ${priority.text}`}>
-                      {priority.icon} {task.priority}
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1 ${priority.bg} ${priority.text}`}>
+                      {priority.icon} <span className="capitalize">{task.priority}</span>
                     </span>
-                    {overdue && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-50 text-red-600">⚠ Overdue</span>}
+                    {overdue && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 flex items-center gap-1"><AlertTriangle size={10} /> Overdue</span>}
                   </div>
                   {task.description && <p className="text-xs text-gray-400 mt-1 line-clamp-1">{task.description}</p>}
                   <div className="flex flex-wrap items-center gap-3 mt-2 text-[11px] text-gray-400">
-                    {task.assigned_to && <span>👤 {task.assigned_to}</span>}
-                    {task.due_date && <span className={overdue ? 'text-red-400 font-semibold' : ''}>📅 {new Date(task.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>}
+                    {task.assigned_to && <span className="flex items-center gap-1"><User size={12} /> {task.assigned_to}</span>}
+                    {task.due_date && <span className={`flex items-center gap-1 ${overdue ? 'text-red-400 font-semibold' : ''}`}><Calendar size={12} /> {new Date(task.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>}
                     {task.category && <span className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{task.category}</span>}
                   </div>
                 </div>
@@ -215,6 +255,16 @@ export default function TasksPage() {
               </div>
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showCSV && (
+          <CSVUploader 
+            onUpload={handleBulkUpload} 
+            onClose={() => setShowCSV(false)}
+            sampleHeaders={['title', 'description', 'assigned_to', 'due_date', 'priority', 'category']}
+          />
         )}
       </AnimatePresence>
     </div>

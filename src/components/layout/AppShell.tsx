@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, createContext, useContext } from 'react'
+import { Menu } from 'lucide-react'
 import Sidebar from '@/components/layout/Sidebar'
-import TopBar from '@/components/layout/TopBar'
 
 interface AppShellContextType {
   sidebarCollapsed: boolean
@@ -24,14 +24,22 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <AppShellContext.Provider value={{ sidebarCollapsed, setSidebarCollapsed }}>
-      <div className="flex h-screen bg-[#F9FAFB] overflow-hidden">
+      <div className="flex h-screen bg-background overflow-hidden">
         {/* Mobile overlay */}
         {mobileSidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/40 z-30 lg:hidden"
+            className="fixed inset-0 bg-black/60 z-30 lg:hidden backdrop-blur-sm"
             onClick={() => setMobileSidebarOpen(false)}
           />
         )}
+
+        {/* Mobile Menu Button - Floating */}
+        <button
+          onClick={() => setMobileSidebarOpen(true)}
+          className="lg:hidden fixed top-4 left-4 z-40 p-3 bg-surface border border-outline rounded-2xl shadow-xl text-on-surface-variant hover:text-on-surface transition-all active:scale-95"
+        >
+          <Menu size={24} />
+        </button>
 
         {/* Sidebar */}
         <Sidebar
@@ -43,11 +51,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* Main content */}
         <div
-          className="flex flex-col flex-1 min-w-0 transition-all duration-300"
+          className="flex flex-col flex-1 min-w-0 transition-all duration-300 relative"
         >
-          <TopBar onMobileMenuOpen={() => setMobileSidebarOpen(true)} />
-          <main className="flex-1 overflow-y-auto p-6">
-            {children}
+          <main className="flex-1 overflow-y-auto p-4 lg:p-8 custom-scrollbar">
+            <div className="max-w-7xl mx-auto w-full">
+              {children}
+            </div>
           </main>
         </div>
       </div>

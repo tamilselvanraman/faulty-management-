@@ -16,7 +16,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   const supabase = await createClient()
   const body = await request.json()
   const parsed = taskSchema.partial().safeParse(body)
-  if (!parsed.success) return NextResponse.json({ data: null, error: parsed.error.errors[0].message }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ data: null, error: parsed.error.issues[0].message }, { status: 400 })
 
   // Get old status for log
   const { data: old } = await supabase.from('tasks').select('status').eq('id', id).single()

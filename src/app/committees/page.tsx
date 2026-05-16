@@ -8,21 +8,25 @@ import {
   Clock, MapPin, ArrowLeft, Download, Eye, ShieldCheck,
   Star, LayoutGrid, List as ListIcon, Calendar, CheckCircle,
   FileText, Upload, ChevronDown, UserCheck, Award, Layers,
-  Activity, ArrowUpRight, Zap, Info, Settings, HelpCircle, Bell
+  Activity, ArrowUpRight, Zap, Info, Settings, HelpCircle, Bell,
+  GraduationCap, Gavel, Heart, Trophy, HeartHandshake, ArrowRight,
+  FileEdit, LucideIcon
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import CSVUploader from '@/components/ui/CSVUploader'
 import { useRouter } from 'next/navigation'
+import PortalModal from '@/components/ui/PortalModal'
 
-// --- Material Icon Helper ---
-const MaterialIcon = ({ icon, className = "", fill = false }: { icon: string, className?: string, fill?: boolean }) => (
-  <span 
-    className={`material-symbols-outlined ${className}`} 
-    style={{ fontVariationSettings: `'FILL' ${fill ? 1 : 0}, 'wght' 400, 'GRAD' 0, 'opsz' 24` }}
-  >
-    {icon}
-  </span>
-)
+// --- Category Icon Map (Lucide) ---
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  Academic: <GraduationCap size={28} strokeWidth={2} />,
+  Administrative: <Gavel size={28} strokeWidth={2} />,
+  Cultural: <Heart size={28} strokeWidth={2} />,
+  Sports: <Trophy size={28} strokeWidth={2} />,
+  Technical: <Zap size={28} strokeWidth={2} />,
+  Welfare: <HeartHandshake size={28} strokeWidth={2} />,
+  Examination: <ShieldCheck size={28} strokeWidth={2} />,
+}
 
 // --- Types ---
 interface CommitteeMember {
@@ -55,14 +59,14 @@ interface Committee {
 const CATEGORIES = ['All', 'Academic', 'Administrative', 'Cultural', 'Sports', 'Technical', 'Welfare', 'Examination']
 const COMMITTEE_TYPES = ['Statutory', 'Non-Statutory']
 
-const CATEGORY_STYLES: Record<string, { color: string; bg: string; text: string; border: string; icon: string; shadow: string }> = {
-  Academic: { color: '#3525cd', bg: 'bg-indigo-50/50', text: 'text-indigo-600', border: 'border-indigo-100', icon: 'account_balance', shadow: 'shadow-indigo-500/10' },
-  Administrative: { color: '#575e70', bg: 'bg-slate-50/50', text: 'text-slate-600', border: 'border-slate-100', icon: 'gavel', shadow: 'shadow-slate-500/10' },
-  Cultural: { color: '#7e3000', bg: 'bg-amber-50/50', text: 'text-amber-600', border: 'border-amber-100', icon: 'diversity_3', shadow: 'shadow-amber-500/10' },
-  Sports: { color: '#10b981', bg: 'bg-emerald-50/50', text: 'text-emerald-600', border: 'border-emerald-100', icon: 'workspace_premium', shadow: 'shadow-emerald-500/10' },
-  Technical: { color: '#0ea5e9', bg: 'bg-sky-50/50', text: 'text-sky-600', border: 'border-sky-100', icon: 'bolt', shadow: 'shadow-sky-500/10' },
-  Welfare: { color: '#a44100', bg: 'bg-orange-50/50', text: 'text-orange-600', border: 'border-orange-100', icon: 'volunteer_activism', shadow: 'shadow-orange-500/10' },
-  Examination: { color: '#ba1a1a', bg: 'bg-red-50/50', text: 'text-red-600', border: 'border-red-100', icon: 'verified_user', shadow: 'shadow-red-500/10' },
+const CATEGORY_STYLES: Record<string, { color: string; bg: string; text: string; border: string; shadow: string }> = {
+  Academic: { color: '#3525cd', bg: 'bg-indigo-50/50', text: 'text-indigo-600', border: 'border-indigo-100', shadow: 'shadow-indigo-500/10' },
+  Administrative: { color: '#575e70', bg: 'bg-slate-50/50', text: 'text-slate-600', border: 'border-slate-100', shadow: 'shadow-slate-500/10' },
+  Cultural: { color: '#7e3000', bg: 'bg-amber-50/50', text: 'text-amber-600', border: 'border-amber-100', shadow: 'shadow-amber-500/10' },
+  Sports: { color: '#10b981', bg: 'bg-emerald-50/50', text: 'text-emerald-600', border: 'border-emerald-100', shadow: 'shadow-emerald-500/10' },
+  Technical: { color: '#0ea5e9', bg: 'bg-sky-50/50', text: 'text-sky-600', border: 'border-sky-100', shadow: 'shadow-sky-500/10' },
+  Welfare: { color: '#a44100', bg: 'bg-orange-50/50', text: 'text-orange-600', border: 'border-orange-100', shadow: 'shadow-orange-500/10' },
+  Examination: { color: '#ba1a1a', bg: 'bg-red-50/50', text: 'text-red-600', border: 'border-red-100', shadow: 'shadow-red-500/10' },
 }
 
 const MOCK_COMMITTEES: Committee[] = [
@@ -98,7 +102,7 @@ const fadeUp = {
   visible: (i = 0) => ({ 
     opacity: 1, 
     y: 0, 
-    transition: { delay: i * 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] } 
+    transition: { delay: i * 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } 
   }),
 }
 
@@ -216,10 +220,10 @@ export default function CommitteesPage() {
   }
 
   const stats = [
-    { label: 'TOTAL COMMITTEES', value: committees.length, icon: 'groups', color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { label: 'ACTIVE MEMBERS', value: committees.reduce((a, c) => a + c.member_count, 0), icon: 'person', color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'PENDING ACTIONS', value: 12, icon: 'pending_actions', color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'MEETINGS THIS MONTH', value: 8, icon: 'calendar_month', color: 'text-primary', bg: 'bg-indigo-50' },
+    { label: 'TOTAL COMMITTEES', value: committees.length, icon: <Users size={20} />, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+    { label: 'ACTIVE MEMBERS', value: committees.reduce((a, c) => a + c.member_count, 0), icon: <Users size={20} />, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { label: 'PENDING ACTIONS', value: 12, icon: <Clock size={20} />, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: 'MEETINGS THIS MONTH', value: 8, icon: <Calendar size={20} />, color: 'text-indigo-600', bg: 'bg-indigo-50' },
   ]
 
   return (
@@ -232,6 +236,24 @@ export default function CommitteesPage() {
         </div>
         <div className="flex items-center gap-3">
           <button 
+            onClick={() => {
+              const headers = ['name', 'type', 'category', 'description', 'chair_name', 'member_count', 'formed_date']
+              const csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n"
+              const encodedUri = encodeURI(csvContent)
+              const link = document.createElement("a")
+              link.setAttribute("href", encodedUri)
+              link.setAttribute("download", "committees_template.csv")
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+              toast.success('Template downloaded')
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 transition-all shadow-sm"
+          >
+            <Download size={18} />
+            <span>Download Format</span>
+          </button>
+          <button 
             onClick={() => setShowCSV(true)}
             className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 transition-all shadow-sm"
           >
@@ -242,7 +264,7 @@ export default function CommitteesPage() {
             onClick={() => { setEditItem(null); setShowModal(true) }}
             className="flex items-center gap-2 bg-[#4f46e5] text-white font-semibold px-6 py-2.5 rounded-xl shadow-md hover:bg-indigo-700 active:opacity-80 transition-all"
           >
-            <MaterialIcon icon="add_circle" className="text-xl" />
+            <Plus size={18} />
             <span>Create New Committee</span>
           </button>
         </div>
@@ -323,7 +345,7 @@ export default function CommitteesPage() {
                 className="border-2 border-dashed border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center space-y-4 hover:bg-slate-50 hover:border-indigo-300 transition-all cursor-pointer group"
               >
                 <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:scale-110 group-hover:bg-indigo-50 group-hover:text-indigo-500 transition-all">
-                  <MaterialIcon icon="add" className="text-3xl" />
+                  <Plus size={28} />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-[#1b1b24]">New Committee</h3>
@@ -358,44 +380,46 @@ export default function CommitteesPage() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Modals & Overlays */}
-      <AnimatePresence>
-        {showModal && (
-          <CommitteeModal 
-            editItem={editItem} 
-            onSave={handleSave} 
-            onClose={() => { setShowModal(false); setEditItem(null) }} 
-          />
-        )}
-        {showCSV && (
-          <CSVUploader 
-            onClose={() => setShowCSV(false)}
-            onUpload={handleBulkUpload}
-            sampleHeaders={['name', 'type', 'category', 'description', 'chair_name', 'member_count', 'formed_date']}
-          />
-        )}
-        {viewItem && <CommitteeDetailPanel committee={viewItem} onClose={() => setViewItem(null)} />}
-        {deleteId && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }}
-              className="bg-white rounded-3xl p-8 w-full max-w-md text-center shadow-2xl border border-slate-100"
-            >
-              <div className="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 mx-auto mb-6">
-                <Trash2 size={28} />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900">Disband Committee?</h3>
-              <p className="text-slate-500 mt-2 text-sm leading-relaxed">
-                This action will permanently remove this committee record. This cannot be undone.
-              </p>
-              <div className="flex gap-4 mt-8">
-                <button onClick={() => setDeleteId(null)} className="flex-1 py-3 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl text-sm font-bold transition-all">Cancel</button>
-                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-bold transition-all">Disband</button>
-              </div>
+      {/* Modals & Overlays — via Portal to avoid framer-motion transform break */}
+      <PortalModal>
+        <AnimatePresence>
+          {showModal && (
+            <CommitteeModal 
+              editItem={editItem} 
+              onSave={handleSave} 
+              onClose={() => { setShowModal(false); setEditItem(null) }} 
+            />
+          )}
+          {showCSV && (
+            <CSVUploader 
+              onClose={() => setShowCSV(false)}
+              onUpload={handleBulkUpload}
+              sampleHeaders={['name', 'type', 'category', 'description', 'chair_name', 'member_count', 'formed_date']}
+            />
+          )}
+          {viewItem && <CommitteeDetailPanel committee={viewItem} onClose={() => setViewItem(null)} />}
+          {deleteId && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+              <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }}
+                className="bg-white rounded-3xl p-8 w-full max-w-md text-center shadow-2xl border border-slate-100"
+              >
+                <div className="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 mx-auto mb-6">
+                  <Trash2 size={28} />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">Disband Committee?</h3>
+                <p className="text-slate-500 mt-2 text-sm leading-relaxed">
+                  This action will permanently remove this committee record. This cannot be undone.
+                </p>
+                <div className="flex gap-4 mt-8">
+                  <button onClick={() => setDeleteId(null)} className="flex-1 py-3 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl text-sm font-bold transition-all">Cancel</button>
+                  <button onClick={() => handleDelete(deleteId)} className="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-bold transition-all">Disband</button>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </PortalModal>
     </div>
   )
 }
@@ -419,7 +443,7 @@ function CommitteeCard({ committee, onEdit, onDelete, onView }: {
       
       <div className="flex items-start justify-between mb-8 relative z-10">
         <div className={`w-16 h-16 rounded-[22px] flex items-center justify-center ${style.bg} ${style.text} shadow-inner`}>
-          <MaterialIcon icon={style.icon} className="text-3xl" />
+          {CATEGORY_ICONS[committee.category] ?? <Building size={28} />}
         </div>
         <div className="flex flex-col items-end gap-3">
           <span className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] rounded-full border ${style.border} ${style.bg} ${style.text}`}>
@@ -468,7 +492,7 @@ function CommitteeCard({ committee, onEdit, onDelete, onView }: {
           onClick={onView}
           className="w-12 h-12 rounded-2xl bg-slate-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all group/btn"
         >
-          <MaterialIcon icon="arrow_forward" className="text-2xl group-hover/btn:translate-x-1 transition-transform" />
+          <ArrowRight size={20} className="group-hover/btn:translate-x-1 transition-transform" />
         </button>
       </div>
     </div>
@@ -503,7 +527,7 @@ function CommitteeTable({ committees, onEdit, onDelete, onView }: {
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-5">
                       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${style.bg} ${style.text} group-hover:scale-110 transition-transform`}>
-                        <MaterialIcon icon={style.icon} className="text-2xl" />
+                        {CATEGORY_ICONS[c.category] ?? <Building size={24} />}
                       </div>
                       <div>
                         <p className="text-base font-black text-slate-900 group-hover:text-indigo-600 transition-colors leading-tight">{c.name}</p>
@@ -732,7 +756,7 @@ function CommitteeModal({ editItem, onSave, onClose }: {
             disabled={!form.name}
             className="flex-2 py-5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white rounded-[26px] text-sm font-black uppercase tracking-[0.2em] shadow-2xl shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-3"
           >
-            <MaterialIcon icon={editItem ? 'auto_fix_high' : 'verified'} className="text-xl" />
+            {editItem ? <Edit2 size={20} /> : <CheckCircle size={20} />}
             {editItem ? 'Confirm Refinements' : 'Authorize Establishment'}
           </button>
         </div>
@@ -771,7 +795,7 @@ function CommitteeDetailPanel({ committee, onClose }: { committee: Committee; on
             transition={{ delay: 0.2, type: 'spring' }}
             className={`w-32 h-32 rounded-[40px] bg-white/80 backdrop-blur-2xl shadow-2xl ${style.text} border border-white flex items-center justify-center relative z-10`}
           >
-            <MaterialIcon icon={style.icon} className="text-6xl" />
+            <span className="scale-[2.5]">{CATEGORY_ICONS[committee.category] ?? <Building size={28} />}</span>
           </motion.div>
           
           <button 
@@ -957,7 +981,7 @@ function CommitteeDetailPanel({ committee, onClose }: { committee: Committee; on
         <div className="p-12 border-t border-slate-100 bg-white flex gap-6">
           <button onClick={onClose} className="flex-1 py-6 bg-slate-50 text-slate-500 rounded-[32px] text-xs font-black uppercase tracking-[0.25em] hover:bg-slate-100 hover:text-slate-700 transition-all active:scale-95">Dismiss Hub</button>
           <button className="flex-2 py-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[32px] text-xs font-black uppercase tracking-[0.25em] shadow-[0_20px_50px_rgba(79,70,229,0.25)] transition-all flex items-center justify-center gap-4 active:scale-95 group">
-            <MaterialIcon icon="edit_document" className="text-2xl group-hover:rotate-12 transition-transform" /> 
+            <FileEdit size={22} className="group-hover:rotate-12 transition-transform" />
             <span>Refine Charter</span>
           </button>
         </div>

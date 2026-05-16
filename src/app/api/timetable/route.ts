@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const body = await request.json()
   const parsed = timetableSlotSchema.safeParse(body)
-  if (!parsed.success) return NextResponse.json({ data: null, error: parsed.error.errors[0].message }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ data: null, error: parsed.error.issues[0].message }, { status: 400 })
   // Conflict check: same faculty, same day+period
   if (parsed.data.faculty_id) {
     const { data: conflict } = await supabase.from('timetable')
@@ -41,3 +41,4 @@ export async function DELETE(request: NextRequest) {
   if (error) return NextResponse.json({ data: null, error: error.message }, { status: 500 })
   return NextResponse.json({ data: { id }, error: null })
 }
+

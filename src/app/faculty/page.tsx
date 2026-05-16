@@ -12,6 +12,7 @@ import {
 import toast from 'react-hot-toast'
 import CSVUploader from '@/components/ui/CSVUploader'
 import { useRouter } from 'next/navigation'
+import { downloadCSV, CSV_TEMPLATES } from '@/utils/csvHelper'
 
 interface Faculty {
   id: string
@@ -39,27 +40,27 @@ const SHIFTS = ['Day', 'Eve', 'Noon']
 const DESIGNATIONS = ['Professor', 'Associate Professor', 'Assistant Professor', 'Lecturer', 'Senior Lecturer', 'Head of Department']
 
 const STATUS_STYLES: Record<string, string> = {
-  active: 'bg-emerald-50 text-emerald-700 border-emerald-100',
-  inactive: 'bg-gray-50 text-gray-500 border-gray-100',
-  on_leave: 'bg-amber-50 text-amber-700 border-amber-100',
+  active: 'bg-emerald-50 text-emerald-700 border-emerald-100 shadow-emerald-100/20',
+  inactive: 'bg-slate-50 text-slate-500 border-slate-100',
+  on_leave: 'bg-amber-50 text-amber-700 border-amber-100 shadow-amber-100/20',
 }
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
-  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] } }),
+  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }),
 }
 
 const getDeptStyle = (dept: string) => {
   switch (dept) {
-    case 'CSE': return 'bg-indigo-50 text-indigo-700 border-indigo-100'
-    case 'AIDS': return 'bg-blue-50 text-blue-700 border-blue-100'
-    case 'MECH': return 'bg-orange-50 text-orange-700 border-orange-100'
-    case 'CIVIL': return 'bg-amber-50 text-amber-700 border-amber-100'
-    case 'MBA': return 'bg-rose-50 text-rose-700 border-rose-100'
-    case 'ECE': return 'bg-emerald-50 text-emerald-700 border-emerald-100'
-    case 'BME': return 'bg-cyan-50 text-cyan-700 border-cyan-100'
-    case 'AENS': return 'bg-purple-50 text-purple-700 border-purple-100'
-    default: return 'bg-gray-50 text-gray-700 border-gray-100'
+    case 'CSE': return 'bg-slate-50 text-slate-700 border-slate-100'
+    case 'AIDS': return 'bg-slate-50 text-slate-700 border-slate-100'
+    case 'MECH': return 'bg-slate-50 text-slate-700 border-slate-100'
+    case 'CIVIL': return 'bg-slate-50 text-slate-700 border-slate-100'
+    case 'MBA': return 'bg-slate-50 text-slate-700 border-slate-100'
+    case 'ECE': return 'bg-slate-50 text-slate-700 border-slate-100'
+    case 'BME': return 'bg-slate-50 text-slate-700 border-slate-100'
+    case 'AENS': return 'bg-slate-50 text-slate-700 border-slate-100'
+    default: return 'bg-slate-50 text-slate-700 border-slate-100'
   }
 }
 
@@ -172,10 +173,10 @@ export default function FacultyPage() {
   }
 
   const stats = [
-    { label: 'TOTAL FACULTY', value: faculty.length, icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { label: 'DEPARTMENTS', value: DEPARTMENTS.length, icon: Building, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'PH.D HOLDERS', value: faculty.filter(f => f.qualification?.toLowerCase().includes('ph.d')).length, icon: Award, color: 'text-purple-600', bg: 'bg-purple-50' },
-    { label: 'ON LEAVE', value: faculty.filter(f => f.status === 'on_leave').length, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: 'TOTAL FACULTY', value: faculty.length, icon: Users, color: 'text-slate-600', bg: 'bg-slate-50' },
+    { label: 'DEPARTMENTS', value: DEPARTMENTS.length, icon: Building, color: 'text-slate-600', bg: 'bg-slate-50' },
+    { label: 'PH.D HOLDERS', value: faculty.filter(f => f.qualification?.toLowerCase().includes('ph.d')).length, icon: Award, color: 'text-slate-600', bg: 'bg-slate-50' },
+    { label: 'ON LEAVE', value: faculty.filter(f => f.status === 'on_leave').length, icon: Clock, color: 'text-slate-600', bg: 'bg-slate-50' },
   ]
 
   return (
@@ -183,18 +184,18 @@ export default function FacultyPage() {
       {/* Premium Header */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 px-4">
         <div className="space-y-4">
-          <nav className="flex items-center gap-2 text-[13px] font-bold text-gray-400">
-            <button onClick={() => { setSelectedDept(null); setSelectedShift(null) }} className="hover:text-indigo-600 transition-colors uppercase tracking-widest">Faculty Management</button>
+          <nav className="flex items-center gap-2 text-[13px] font-bold text-slate-400">
+            <button onClick={() => { setSelectedDept(null); setSelectedShift(null) }} className="hover:text-primary transition-colors uppercase tracking-widest">Faculty Management</button>
             {selectedDept && (
               <>
-                <ChevronRight size={14} className="text-gray-300" />
-                <button onClick={() => setSelectedShift(null)} className="hover:text-indigo-600 transition-colors uppercase tracking-widest text-gray-600">{selectedDept}</button>
+                <ChevronRight size={14} className="text-slate-300" />
+                <button onClick={() => setSelectedShift(null)} className="hover:text-primary transition-colors uppercase tracking-widest text-slate-600">{selectedDept}</button>
               </>
             )}
             {selectedShift && (
               <>
-                <ChevronRight size={14} className="text-gray-300" />
-                <span className="text-indigo-600 uppercase tracking-widest">{selectedShift} Shift</span>
+                <ChevronRight size={14} className="text-slate-300" />
+                <span className="text-primary uppercase tracking-widest">{selectedShift} Shift</span>
               </>
             )}
           </nav>
@@ -203,16 +204,16 @@ export default function FacultyPage() {
             {selectedDept && (
               <button 
                 onClick={() => { selectedShift ? setSelectedShift(null) : setSelectedDept(null) }} 
-                className="p-3 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-all shadow-sm group"
+                className="p-3 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all shadow-sm group"
               >
-                <ArrowLeft size={24} className="text-gray-400 group-hover:text-indigo-600 transition-colors" />
+                <ArrowLeft size={24} className="text-slate-400 group-hover:text-primary transition-colors" />
               </button>
             )}
             <div>
-              <h1 className="text-[40px] font-black text-gray-900 tracking-tight leading-none">
+              <h1 className="text-[40px] font-black text-slate-900 tracking-tight leading-none">
                 {selectedDept ? `${selectedDept} Department` : 'Academic Faculty'}
               </h1>
-              <p className="text-[17px] text-gray-500 font-medium mt-2">
+              <p className="text-[17px] text-slate-500 font-medium mt-2">
                 {selectedDept 
                   ? `Detailed directory of faculty members in ${selectedDept} ${selectedShift ? `- ${selectedShift} Shift` : ''}`
                   : 'Manage and monitor academic staff across all departments and shifts.'}
@@ -222,20 +223,24 @@ export default function FacultyPage() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <div className="flex bg-white p-1 rounded-2xl border border-gray-200 shadow-sm mr-2">
-            <button onClick={() => setViewMode('grid')} className={`p-2.5 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}>
+          <div className="flex bg-white p-1 rounded-2xl border border-slate-200 shadow-sm mr-2">
+            <button onClick={() => setViewMode('grid')} className={`p-2.5 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-slate-100 text-primary shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
               <LayoutGrid size={20} />
             </button>
-            <button onClick={() => setViewMode('table')} className={`p-2.5 rounded-xl transition-all ${viewMode === 'table' ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}>
+            <button onClick={() => setViewMode('table')} className={`p-2.5 rounded-xl transition-all ${viewMode === 'table' ? 'bg-slate-100 text-primary shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
               <ListIcon size={20} />
             </button>
           </div>
+          <button onClick={() => downloadCSV('faculty_import_template.csv', CSV_TEMPLATES.faculty.headers, CSV_TEMPLATES.faculty.sample)}
+            className="flex items-center gap-2 px-6 py-3.5 bg-white border border-slate-200 hover:border-slate-300 hover:text-primary rounded-[18px] text-[15px] font-bold transition-all shadow-sm">
+            <Download size={18} className="text-indigo-600" /> Format
+          </button>
           <button onClick={() => setShowCSV(true)}
-            className="flex items-center gap-2 px-6 py-3.5 bg-white border border-[#E5E7EB] hover:border-indigo-200 hover:text-indigo-600 rounded-[18px] text-[15px] font-bold transition-all shadow-sm">
-            <Upload size={18} /> Import Bulk
+            className="flex items-center gap-2 px-6 py-3.5 bg-white border border-slate-200 hover:border-slate-300 hover:text-primary rounded-[18px] text-[15px] font-bold transition-all shadow-sm">
+            <Upload size={18} className="text-indigo-600" /> Import Bulk
           </button>
           <button onClick={() => { setEditItem(null); setShowModal(true) }}
-            className="flex items-center gap-2 px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[18px] text-[15px] font-black transition-all shadow-xl shadow-indigo-100">
+            className="flex items-center gap-2 px-8 py-3.5 bg-primary hover:bg-slate-800 text-white rounded-[18px] text-[15px] font-black transition-all shadow-xl shadow-slate-200">
             <Plus size={20} /> Add Faculty
           </button>
         </div>
@@ -245,13 +250,13 @@ export default function FacultyPage() {
       {!selectedDept && (
         <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
           {stats.map((stat, i) => (
-            <div key={i} className="bg-white border border-gray-100 rounded-[32px] p-7 flex items-center gap-6 shadow-sm hover:shadow-xl hover:border-indigo-50 transition-all group">
+            <div key={i} className="bg-white border border-slate-100 rounded-[32px] p-7 flex items-center gap-6 shadow-sm hover:shadow-xl hover:border-slate-200 transition-all group">
               <div className={`w-16 h-16 rounded-[22px] flex items-center justify-center ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
                 <stat.icon size={30} />
               </div>
               <div>
-                <p className="text-[12px] font-black text-gray-400 uppercase tracking-widest">{stat.label}</p>
-                <p className="text-3xl font-black text-gray-900 mt-1">{stat.value}</p>
+                <p className="text-[12px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                <p className="text-3xl font-black text-slate-900 mt-1">{stat.value}</p>
               </div>
             </div>
           ))}
@@ -270,7 +275,6 @@ export default function FacultyPage() {
           >
             {DEPARTMENTS.map((dept, i) => {
               const count = faculty.filter(f => f.department === dept).length
-              const style = getDeptStyle(dept)
               return (
                 <motion.div
                   key={dept}
@@ -280,26 +284,26 @@ export default function FacultyPage() {
                   custom={i}
                   whileHover={{ y: -8, scale: 1.02 }}
                   onClick={() => setSelectedDept(dept)}
-                  className={`relative overflow-hidden cursor-pointer p-8 rounded-[40px] border-2 ${style} transition-all shadow-xl group h-[220px] flex flex-col justify-between`}
+                  className="relative overflow-hidden cursor-pointer p-8 rounded-[40px] border border-slate-100 bg-white hover:border-primary/20 hover:shadow-2xl hover:shadow-slate-200/50 transition-all group h-[220px] flex flex-col justify-between"
                 >
                   <div className="flex items-start justify-between relative z-10">
-                    <div className="w-14 h-14 rounded-2xl bg-white/60 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-sm">
+                    <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all shadow-inner">
                       <GraduationCap size={28} />
                     </div>
-                    <div className="px-4 py-1.5 rounded-full bg-white/40 backdrop-blur-md border border-white/20 text-[11px] font-black uppercase tracking-widest">
+                    <div className="px-4 py-1.5 rounded-full bg-slate-50 text-[11px] font-black uppercase tracking-widest text-slate-400 group-hover:text-primary transition-colors">
                       {dept}
                     </div>
                   </div>
                   
                   <div className="relative z-10">
-                    <h3 className="text-3xl font-black mb-1">{dept}</h3>
-                    <p className="text-[15px] font-bold opacity-70">Academic Faculty · {count}</p>
+                    <h3 className="text-3xl font-black text-slate-900 mb-1">{dept}</h3>
+                    <p className="text-[15px] font-bold text-slate-400">Academic Faculty · {count}</p>
                   </div>
                   
-                  <div className="absolute -right-8 -bottom-8 opacity-10 group-hover:opacity-20 transition-all rotate-12 group-hover:rotate-0">
+                  <div className="absolute -right-8 -bottom-8 text-slate-50 opacity-20 group-hover:opacity-40 transition-opacity rotate-12 group-hover:rotate-0">
                     <Building size={180} />
                   </div>
-                  <div className="absolute bottom-8 right-8 p-3 rounded-full bg-white/40 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
+                  <div className="absolute bottom-8 right-8 p-3 rounded-full bg-slate-50 text-slate-400 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
                     <ChevronRight size={24} />
                   </div>
                 </motion.div>
@@ -325,21 +329,21 @@ export default function FacultyPage() {
                     key={s}
                     whileHover={{ y: -8, scale: 1.02 }}
                     onClick={() => setSelectedShift(s)}
-                    className="cursor-pointer bg-white border-2 border-gray-100 p-12 rounded-[48px] shadow-sm hover:shadow-2xl hover:border-indigo-100 transition-all group text-center"
+                    className="cursor-pointer bg-white border border-slate-100 p-12 rounded-[48px] shadow-sm hover:shadow-2xl hover:border-primary/20 hover:shadow-slate-200/50 transition-all group text-center"
                   >
-                    <div className="w-24 h-24 mx-auto rounded-[32px] bg-indigo-50 flex items-center justify-center text-indigo-600 mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-all transform group-hover:rotate-6 shadow-inner">
+                    <div className="w-24 h-24 mx-auto rounded-[32px] bg-slate-50 flex items-center justify-center text-slate-400 mb-8 group-hover:bg-primary group-hover:text-white transition-all transform group-hover:rotate-6 shadow-inner">
                       <Clock size={48} />
                     </div>
-                    <h3 className="text-2xl font-black text-gray-900 mb-2">{s} Shift</h3>
-                    <p className="text-gray-500 font-bold text-lg">{count} Faculty Members</p>
+                    <h3 className="text-2xl font-black text-slate-900 mb-2">{s} Shift</h3>
+                    <p className="text-slate-500 font-bold text-lg">{count} Faculty Members</p>
                   </motion.div>
                 )
               })}
             </div>
             
             <div className="flex justify-center">
-              <button onClick={() => setSelectedShift('All')} className="flex items-center gap-3 px-12 py-5 bg-white border-2 border-gray-100 rounded-3xl text-[16px] font-black text-gray-700 hover:bg-gray-50 hover:border-indigo-200 transition-all group shadow-sm">
-                <Users size={24} className="text-indigo-600 group-hover:scale-110 transition-transform" /> 
+              <button onClick={() => setSelectedShift('All')} className="flex items-center gap-3 px-12 py-5 bg-white border border-slate-200 rounded-3xl text-[16px] font-black text-slate-700 hover:bg-slate-50 hover:border-primary/30 transition-all group shadow-sm">
+                <Users size={24} className="text-primary group-hover:scale-110 transition-transform" /> 
                 View Complete {selectedDept} Faculty List
               </button>
             </div>
@@ -355,20 +359,20 @@ export default function FacultyPage() {
             className="space-y-8 px-4"
           >
             {/* Advanced Filters */}
-            <div className="flex flex-col md:flex-row gap-4 items-center bg-white/80 backdrop-blur-xl p-4 rounded-[32px] border border-gray-200 shadow-xl sticky top-4 z-30">
-              <div className="flex-1 flex items-center gap-4 bg-gray-50 px-6 py-4 rounded-[22px] border border-transparent focus-within:border-indigo-200 focus-within:bg-white transition-all w-full shadow-inner">
-                <Search size={22} className="text-gray-400" />
+            <div className="flex flex-col md:flex-row gap-4 items-center bg-white/80 backdrop-blur-xl p-4 rounded-[32px] border border-slate-200 shadow-xl sticky top-4 z-30">
+              <div className="flex-1 flex items-center gap-4 bg-slate-50 px-6 py-4 rounded-[22px] border border-transparent focus-within:border-primary/20 focus-within:bg-white transition-all w-full shadow-inner">
+                <Search size={22} className="text-slate-400" />
                 <input 
                   value={search} onChange={e => setSearch(e.target.value)}
                   placeholder="Search by name, ID, subjects or responsibilities..." 
-                  className="bg-transparent text-[16px] outline-none w-full text-gray-800 font-bold placeholder:text-gray-400 placeholder:font-medium"
+                  className="bg-transparent text-[16px] outline-none w-full text-slate-800 font-bold placeholder:text-slate-400 placeholder:font-medium"
                 />
               </div>
               <div className="flex items-center gap-3 w-full md:w-auto">
-                <button className="flex items-center gap-2 px-6 py-4 bg-white border border-gray-200 rounded-[22px] text-[15px] font-black text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-all flex-1 md:flex-none shadow-sm">
+                <button className="flex items-center gap-2 px-6 py-4 bg-white border border-slate-200 rounded-[22px] text-[15px] font-black text-slate-700 hover:bg-slate-50 hover:text-primary transition-all flex-1 md:flex-none shadow-sm">
                   <Download size={20} /> Export
                 </button>
-                <button className="flex items-center gap-2 px-6 py-4 bg-indigo-50 border border-indigo-100 rounded-[22px] text-[15px] font-black text-indigo-700 hover:bg-indigo-100 transition-all flex-1 md:flex-none">
+                <button className="flex items-center gap-2 px-6 py-4 bg-slate-100 border border-slate-200 rounded-[22px] text-[15px] font-black text-primary hover:bg-slate-200 transition-all flex-1 md:flex-none">
                   <Filter size={20} /> Advanced
                 </button>
               </div>
@@ -383,15 +387,15 @@ export default function FacultyPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
                     whileHover={{ y: -5 }}
-                    className="bg-white rounded-[40px] border border-gray-100 p-8 shadow-sm hover:shadow-2xl transition-all group relative overflow-hidden"
+                    className="bg-white rounded-[40px] border border-slate-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-slate-200/50 transition-all group relative overflow-hidden"
                   >
                     <div className="flex items-start justify-between mb-6">
                       <div className="relative">
-                        <div className="w-20 h-20 rounded-[28px] bg-gradient-to-br from-indigo-500 to-violet-600 p-0.5 shadow-lg">
+                        <div className="w-20 h-20 rounded-[28px] bg-slate-100 p-0.5 shadow-lg">
                           {f.photo_url ? (
                             <img src={f.photo_url} className="w-full h-full rounded-[26px] object-cover" />
                           ) : (
-                            <div className="w-full h-full rounded-[26px] bg-white flex items-center justify-center text-indigo-600 font-black text-2xl">
+                            <div className="w-full h-full rounded-[26px] bg-white flex items-center justify-center text-primary font-black text-2xl">
                               {f.name.charAt(0)}
                             </div>
                           )}
@@ -399,33 +403,33 @@ export default function FacultyPage() {
                         <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-4 border-white ${f.status === 'active' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                       </div>
                       <div className="flex gap-2">
-                        <button onClick={() => router.push(`/faculty/${f.id}`)} className="p-3 bg-gray-50 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-2xl transition-all"><Eye size={20} /></button>
-                        <button onClick={() => { setEditItem(f); setShowModal(true) }} className="p-3 bg-gray-50 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-2xl transition-all"><Edit2 size={20} /></button>
+                        <button onClick={() => router.push(`/faculty/${f.id}`)} className="p-3 bg-slate-50 text-slate-400 hover:text-primary hover:bg-slate-100 rounded-2xl transition-all"><Eye size={20} /></button>
+                        <button onClick={() => { setEditItem(f); setShowModal(true) }} className="p-3 bg-slate-50 text-slate-400 hover:text-primary hover:bg-slate-100 rounded-2xl transition-all"><Edit2 size={20} /></button>
                       </div>
                     </div>
 
                     <div className="space-y-1">
-                      <h3 className="text-xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors">{f.name}</h3>
-                      <p className="text-[14px] font-bold text-gray-400 flex items-center gap-1.5 uppercase tracking-wider">
+                      <h3 className="text-xl font-black text-slate-900 group-hover:text-primary transition-colors">{f.name}</h3>
+                      <p className="text-[14px] font-bold text-slate-400 flex items-center gap-1.5 uppercase tracking-wider">
                         {f.designation} <span className="opacity-30">·</span> {f.qualification}
                       </p>
                     </div>
 
-                    <div className="mt-6 pt-6 border-t border-gray-50 space-y-4">
-                      <div className="flex items-center gap-3 text-[14px] font-bold text-gray-600">
-                        <div className="p-2 bg-gray-50 rounded-xl text-gray-400"><Briefcase size={16} /></div>
+                    <div className="mt-6 pt-6 border-t border-slate-50 space-y-4">
+                      <div className="flex items-center gap-3 text-[14px] font-bold text-slate-600">
+                        <div className="p-2 bg-slate-50 rounded-xl text-slate-400"><Briefcase size={16} /></div>
                         {f.employee_id}
                       </div>
-                      <div className="flex items-center gap-3 text-[14px] font-bold text-gray-600">
-                        <div className="p-2 bg-gray-50 rounded-xl text-gray-400"><Mail size={16} /></div>
+                      <div className="flex items-center gap-3 text-[14px] font-bold text-slate-600">
+                        <div className="p-2 bg-slate-50 rounded-xl text-slate-400"><Mail size={16} /></div>
                         <span className="truncate">{f.email}</span>
                       </div>
                     </div>
 
                     <div className="mt-6 flex flex-wrap gap-2">
-                      {f.subject_1 && <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-[11px] font-black uppercase border border-indigo-100">{f.subject_1}</span>}
+                      {f.subject_1 && <span className="px-3 py-1 bg-slate-50 text-slate-700 rounded-xl text-[11px] font-black uppercase border border-slate-100">{f.subject_1}</span>}
                       {f.subject_2 && <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-xl text-[11px] font-black uppercase border border-emerald-100">{f.subject_2}</span>}
-                      {f.dept_level_responsibility && <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-xl text-[11px] font-black uppercase border border-purple-100">Dept Lead</span>}
+                      {f.dept_level_responsibility && <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-xl text-[11px] font-black uppercase border border-slate-200">Dept Lead</span>}
                     </div>
 
                     <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-5 transition-opacity">
@@ -435,26 +439,26 @@ export default function FacultyPage() {
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-[40px] border border-gray-100 overflow-hidden shadow-xl">
+              <div className="bg-white rounded-[40px] border border-slate-100 overflow-hidden shadow-xl">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-gray-50/50 border-b border-gray-100">
-                        <th className="px-10 py-6 text-[12px] font-black text-gray-400 uppercase tracking-widest">Faculty Member</th>
-                        <th className="px-10 py-6 text-[12px] font-black text-gray-400 uppercase tracking-widest">Core Subjects</th>
-                        <th className="px-10 py-6 text-[12px] font-black text-gray-400 uppercase tracking-widest">Responsibilities</th>
-                        <th className="px-10 py-6 text-[12px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-                        <th className="px-10 py-6 text-[12px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
+                      <tr className="bg-slate-50/50 border-b border-slate-100">
+                        <th className="px-10 py-6 text-[12px] font-black text-slate-400 uppercase tracking-widest">Faculty Member</th>
+                        <th className="px-10 py-6 text-[12px] font-black text-slate-400 uppercase tracking-widest">Core Subjects</th>
+                        <th className="px-10 py-6 text-[12px] font-black text-slate-400 uppercase tracking-widest">Responsibilities</th>
+                        <th className="px-10 py-6 text-[12px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                        <th className="px-10 py-6 text-[12px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-50">
+                    <tbody className="divide-y divide-slate-50">
                       {filteredFaculty.map((f, i) => (
                         <motion.tr 
                           key={f.id}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.03 }}
-                          className="hover:bg-indigo-50/20 transition-colors group"
+                          className="hover:bg-slate-50/50 transition-colors group"
                         >
                           <td className="px-10 py-6">
                             <div className="flex items-center gap-5">
@@ -507,16 +511,16 @@ export default function FacultyPage() {
             )}
 
             {filteredFaculty.length === 0 && (
-              <div className="bg-white rounded-[40px] p-24 text-center border-2 border-dashed border-gray-100">
+              <div className="bg-white rounded-[40px] p-24 text-center border-2 border-dashed border-slate-100">
                 <div className="flex flex-col items-center gap-6">
-                  <div className="w-24 h-24 bg-gray-50 rounded-[32px] flex items-center justify-center text-gray-200">
+                  <div className="w-24 h-24 bg-slate-50 rounded-[32px] flex items-center justify-center text-slate-200">
                     <Users size={48} />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-black text-gray-900">No faculty members found</h3>
-                    <p className="text-gray-500 font-bold mt-2">Try adjusting your search or filters to find what you're looking for.</p>
+                    <h3 className="text-2xl font-black text-slate-900">No faculty members found</h3>
+                    <p className="text-slate-500 font-bold mt-2">Try adjusting your search or filters to find what you're looking for.</p>
                   </div>
-                  <button onClick={() => { setSearch(''); setSelectedShift('All') }} className="px-8 py-3 bg-indigo-50 text-indigo-700 rounded-2xl font-black text-[14px] hover:bg-indigo-100 transition-all">Clear All Search Filters</button>
+                  <button onClick={() => { setSearch(''); setSelectedShift('All') }} className="px-8 py-3 bg-slate-50 text-primary rounded-2xl font-black text-[14px] hover:bg-slate-100 transition-all">Clear All Search Filters</button>
                 </div>
               </div>
             )}
@@ -591,20 +595,20 @@ function FacultyModal({ editItem, loading, onSave, onClose }: { editItem: Facult
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/50 backdrop-blur-xl flex items-center justify-center z-[100] p-4">
       <motion.div initial={{ scale: 0.95, opacity: 0, y: 30 }} animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        exit={{ scale: 0.95, opacity: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
         className="bg-white rounded-[48px] w-full max-w-5xl max-h-[95vh] flex flex-col shadow-2xl border border-white">
         
-        <div className="flex items-start justify-between px-12 py-10 border-b border-gray-100">
+        <div className="flex items-start justify-between px-12 py-10 border-b border-slate-100">
           <div className="flex items-center gap-6">
-            <div className="w-16 h-16 rounded-[22px] bg-indigo-50 flex items-center justify-center text-indigo-600">
+            <div className="w-16 h-16 rounded-[22px] bg-slate-50 flex items-center justify-center text-primary">
               <Users size={32} />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight">{editItem ? 'Edit Faculty Member' : 'Add Faculty Member'}</h2>
-              <p className="text-[16px] text-gray-500 mt-1 font-bold italic opacity-70">Define academic roles and teaching responsibilities.</p>
+              <h2 className="text-3xl font-black text-slate-900 tracking-tight">{editItem ? 'Edit Faculty Member' : 'Add Faculty Member'}</h2>
+              <p className="text-[16px] text-slate-500 mt-1 font-bold italic opacity-70">Define academic roles and teaching responsibilities.</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-4 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-all shadow-sm"><X size={24} /></button>
+          <button onClick={onClose} className="p-4 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-all shadow-sm"><X size={24} /></button>
         </div>
 
         <div className="p-12 overflow-y-auto space-y-12 custom-scrollbar">
@@ -719,10 +723,10 @@ function FacultyModal({ editItem, loading, onSave, onClose }: { editItem: Facult
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-6 px-12 py-10 border-t border-gray-100 bg-gray-50/50 rounded-b-[48px]">
-          <button onClick={onClose} className="px-10 py-4 bg-white border-2 border-gray-200 rounded-[28px] text-[15px] font-black text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">Cancel</button>
+        <div className="flex items-center justify-end gap-6 px-12 py-10 border-t border-slate-100 bg-slate-50/50 rounded-b-[48px]">
+          <button onClick={onClose} className="px-10 py-4 bg-white border border-slate-200 rounded-[28px] text-[15px] font-black text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm">Cancel</button>
           <button onClick={() => onSave(form)} disabled={loading || !form.name || !form.email || !form.department}
-            className="px-12 py-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-[28px] text-[16px] font-black transition-all shadow-xl shadow-indigo-200 flex items-center gap-3">
+            className="px-12 py-4 bg-primary hover:bg-slate-800 disabled:opacity-50 text-white rounded-[28px] text-[16px] font-black transition-all shadow-xl shadow-slate-200 flex items-center gap-3">
             {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
             {editItem ? 'Save Profile Changes' : 'Complete Registration'}
           </button>

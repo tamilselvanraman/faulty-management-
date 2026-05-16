@@ -12,6 +12,7 @@ import {
 import toast from 'react-hot-toast'
 import CSVUploader from '@/components/ui/CSVUploader'
 import { useRouter } from 'next/navigation'
+import { downloadCSV, CSV_TEMPLATES } from '@/utils/csvHelper'
 
 interface Student {
   id: string
@@ -44,7 +45,7 @@ const STATUS_STYLES: Record<string, string> = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
-  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] } }),
+  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }),
 }
 
 const getDeptStyle = (dept: string) => {
@@ -191,45 +192,64 @@ export default function StudentsPage() {
       {/* Header */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 px-4">
         <div>
-          <nav className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-            <button onClick={() => { setSelectedDept(null); setSelectedYear(null) }} className="hover:text-indigo-600 transition-colors font-medium">Students</button>
+          <nav className="flex items-center gap-2 text-sm text-slate-500 mb-2">
+            <button onClick={() => { setSelectedDept(null); setSelectedYear(null) }} className="hover:text-primary transition-colors font-medium">Students</button>
             {selectedDept && (
               <>
-                <ChevronRight size={14} className="text-gray-300" />
-                <button onClick={() => setSelectedYear(null)} className="hover:text-indigo-600 transition-colors font-medium">{selectedDept}</button>
+                <ChevronRight size={14} className="text-slate-300" />
+                <button onClick={() => setSelectedYear(null)} className="hover:text-primary transition-colors font-medium">{selectedDept}</button>
               </>
             )}
             {selectedYear && (
               <>
-                <ChevronRight size={14} className="text-gray-300" />
-                <span className="text-gray-900 font-bold">{selectedYear === 'All' ? 'All Years' : `Year ${selectedYear}`}</span>
+                <ChevronRight size={14} className="text-slate-300" />
+                <span className="text-slate-900 font-bold">{selectedYear === 'All' ? 'All Years' : `Year ${selectedYear}`}</span>
               </>
             )}
           </nav>
-          <h1 className="text-[32px] font-black text-gray-900 tracking-tight flex items-center gap-3">
+          <h1 className="text-[32px] font-black text-slate-900 tracking-tight flex items-center gap-3">
             {selectedDept ? (
-              <button onClick={() => { selectedYear ? setSelectedYear(null) : setSelectedDept(null) }} className="p-2 hover:bg-gray-100 rounded-xl transition-all">
+              <button onClick={() => { selectedYear ? setSelectedYear(null) : setSelectedDept(null) }} className="p-2 hover:bg-slate-100 rounded-xl transition-all">
                 <ArrowLeft size={24} />
               </button>
             ) : null}
             Student Directory
           </h1>
-          <p className="text-[15px] text-gray-500 mt-1 font-medium">
+          <p className="text-[15px] text-slate-500 mt-1 font-medium">
             {selectedDept 
               ? `Managing ${selectedDept} Department ${selectedYear ? `- ${selectedYear === 'All' ? 'All Students' : `Year ${selectedYear}`}` : ''}`
               : 'Holistic management of student lifecycle and academic performance.'}
           </p>
         </div>
         <div className="flex gap-3">
+          <button onClick={() => downloadCSV('students_import_template.csv', CSV_TEMPLATES.students.headers, CSV_TEMPLATES.students.sample)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-[14px] font-bold transition-all shadow-sm">
+            <Download size={16} className="text-indigo-600" /> Format
+          </button>
           <button onClick={() => setShowCSV(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#E5E7EB] hover:border-indigo-200 hover:text-indigo-600 rounded-xl text-[14px] font-bold transition-all shadow-sm">
-            <Upload size={16} /> Bulk Import
+            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-[14px] font-bold transition-all shadow-sm">
+            <Upload size={16} className="text-indigo-600" /> Import
           </button>
           <button onClick={() => { setEditItem(null); setShowModal(true) }}
-            className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[14px] font-bold transition-all shadow-lg shadow-indigo-200">
+            className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-slate-800 text-white rounded-xl text-[14px] font-bold transition-all shadow-lg shadow-slate-200">
             <Plus size={18} /> Add Student
           </button>
         </div>
+      </motion.div>
+
+      {/* Quick Stats Summary */}
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
+        {stats.map((stat, i) => (
+          <div key={i} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group">
+            <div className="flex items-center gap-3 mb-2">
+              <div className={`p-2 rounded-lg ${stat.bg.replace('indigo', 'slate')} ${stat.color.replace('indigo', 'slate')}`}>
+                <stat.icon size={16} />
+              </div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">{stat.label}</span>
+            </div>
+            <p className="text-2xl font-black text-slate-900 group-hover:text-primary transition-colors">{stat.value}</p>
+          </div>
+        ))}
       </motion.div>
 
       <AnimatePresence mode="wait">
@@ -245,7 +265,6 @@ export default function StudentsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {DEPARTMENTS.map((dept, i) => {
                 const count = students.filter(s => s.department === dept).length
-                const style = getDeptStyle(dept)
                 return (
                   <motion.div
                     key={dept}
@@ -253,46 +272,32 @@ export default function StudentsPage() {
                     initial="hidden"
                     animate="visible"
                     custom={i}
-                    whileHover={{ y: -5, scale: 1.02 }}
+                    whileHover={{ y: -5, scale: 1.01 }}
                     onClick={() => setSelectedDept(dept)}
-                    className={`relative overflow-hidden cursor-pointer p-6 rounded-[32px] border ${style} transition-all shadow-xl group h-[200px] flex flex-col justify-between`}
+                    className="relative overflow-hidden cursor-pointer p-7 rounded-[28px] border border-slate-100 bg-white hover:border-primary/20 hover:shadow-2xl hover:shadow-slate-200/50 transition-all group h-[180px] flex flex-col justify-between"
                   >
                     <div className="flex items-start justify-between relative z-10">
-                      <div className="w-14 h-14 rounded-2xl bg-white/60 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-sm">
-                        <GraduationCap size={28} />
+                      <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all shadow-inner">
+                        <GraduationCap size={24} />
                       </div>
-                      <span className="text-[12px] font-black opacity-60 group-hover:opacity-100 transition-opacity uppercase tracking-widest">{dept}</span>
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg text-[10px] font-black text-slate-400 group-hover:text-primary transition-colors">
+                        {dept}
+                      </div>
                     </div>
                     <div className="relative z-10">
-                      <h3 className="text-2xl font-black mb-1">{dept}</h3>
-                      <p className="text-[14px] font-bold opacity-80">{count} Active Students</p>
+                      <h3 className="text-xl font-black text-slate-900 mb-1">{dept}</h3>
+                      <p className="text-[13px] font-bold text-slate-400">{count} Active Students</p>
                     </div>
                     
-                    <div className="absolute -right-6 -bottom-6 opacity-5 group-hover:opacity-15 transition-opacity">
-                      <Users size={140} />
-                    </div>
-                    <div className="absolute bottom-6 right-6 p-2 rounded-full bg-white/20 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all">
-                      <ChevronRight size={22} />
+                    <div className="absolute -right-6 -bottom-6 text-slate-50 opacity-20 group-hover:opacity-40 transition-opacity">
+                      <Users size={120} />
                     </div>
                   </motion.div>
                 )
               })}
             </div>
 
-            {/* Quick Stats Summary */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-12">
-              {stats.map((stat, i) => (
-                <div key={i} className="bg-white/50 backdrop-blur-sm border border-[#E5E7EB] rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className={`p-2 rounded-lg ${stat.bg} ${stat.color}`}>
-                      <stat.icon size={18} />
-                    </div>
-                    <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">{stat.label}</span>
-                  </div>
-                  <p className="text-3xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors">{stat.value}</p>
-                </div>
-              ))}
-            </div>
+
           </motion.div>
         )}
 
@@ -533,7 +538,7 @@ function StudentModal({ editItem, loading, onSave, onClose }: { editItem: Studen
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/40 backdrop-blur-xl flex items-center justify-center z-[100] p-4">
       <motion.div initial={{ scale: 0.95, opacity: 0, y: 30 }} animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        exit={{ scale: 0.95, opacity: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
         className="bg-white rounded-[48px] w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl border border-white">
         
         <div className="flex items-start justify-between px-12 py-10 border-b border-gray-100 bg-gray-50/20 rounded-t-[48px]">

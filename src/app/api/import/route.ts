@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
   rows.forEach((row, i) => {
     const parsed = schema.safeParse(row)
     if (parsed.success) valid.push(parsed.data)
-    else errors.push({ row: i + 1, error: parsed.error.errors[0].message })
+    else errors.push({ row: i + 1, error: parsed.error.issues[0].message })
   })
 
   let inserted = 0
@@ -40,3 +40,4 @@ export async function POST(request: NextRequest) {
     error: null,
   })
 }
+

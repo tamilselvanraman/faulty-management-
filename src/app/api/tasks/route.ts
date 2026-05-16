@@ -20,8 +20,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const parsed = taskSchema.safeParse(await request.json())
-  if (!parsed.success) return NextResponse.json({ data: null, error: parsed.error.errors[0].message }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ data: null, error: parsed.error.issues[0].message }, { status: 400 })
   const { data, error } = await supabase.from('tasks').insert(parsed.data).select().single()
   if (error) return NextResponse.json({ data: null, error: error.message }, { status: 500 })
   return NextResponse.json({ data, error: null }, { status: 201 })
 }
+

@@ -37,3 +37,4 @@ export async function GET() {
     return NextResponse.json({ data: null, error: 'Failed to load dashboard stats' }, { status: 500 })
   }
 }
+

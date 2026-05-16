@@ -6,7 +6,9 @@ import { Plus, Search, Filter, Edit2, Trash2, X, ChevronDown, Presentation, Uplo
 import toast from 'react-hot-toast'
 import CSVUploader from '@/components/ui/CSVUploader'
 import Link from 'next/link'
+import PortalModal from '@/components/ui/PortalModal'
 import { useRouter } from 'next/navigation'
+import { downloadCSV, CSV_TEMPLATES } from '@/utils/csvHelper'
 
 interface Faculty {
   id: string
@@ -42,7 +44,7 @@ const MOCK_CLASSES: ClassData[] = [
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
-  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] } }),
+  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] as [number, number, number, number] } }),
 }
 
 const getBuildingColor = (building: string) => {
@@ -164,15 +166,9 @@ export default function ClassesPage() {
 
   const stats = [
     { label: 'TOTAL CLASSES', value: classes.length, icon: Presentation, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { label: 'AVG OCCUPANCY', value: `${Math.round(classes.reduce((acc, c) => acc + (c.strength / c.capacity), 0) / (classes.length || 1) * 100)}%`, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'ACTIVE ADVISORS', value: new Set(classes.map(c => c.advisor_name)).size, icon: Users, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'NEAR CAPACITY', value: classes.filter(c => (c.strength / c.capacity) > 0.9).length, icon: AlertCircle, color: 'text-rose-600', bg: 'bg-rose-50' },
+    { label: 'TOTAL STU', value: classes.reduce((acc, c) => acc + (c.strength || 0), 0), icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { label: 'TOTAL', value: new Set(classes.map(c => c.advisor_name)).size, icon: Users, color: 'text-amber-600', bg: 'bg-amber-50' },
   ]
-
-  const buildingDistribution = BUILDINGS.filter(b => b !== 'All').map(b => ({
-    name: b,
-    count: classes.filter(c => c.type_building === b).length
-  })).filter(b => b.count > 0)
 
   return (
     <div className="space-y-6">
@@ -183,19 +179,23 @@ export default function ClassesPage() {
           <p className="text-[15px] text-gray-500 mt-1">Manage classrooms, hall assignments, and academic year sections.</p>
         </div>
         <div className="flex gap-3">
+          <button onClick={() => downloadCSV('classes_import_template.csv', CSV_TEMPLATES.classes.headers, CSV_TEMPLATES.classes.sample)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#E5E7EB] hover:bg-gray-50 text-gray-700 rounded-lg text-[14px] font-semibold transition-all shadow-sm">
+            <Download size={16} className="text-indigo-600" /> Format
+          </button>
           <button onClick={() => setShowCSV(true)}
             className="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#E5E7EB] hover:bg-gray-50 text-gray-700 rounded-lg text-[14px] font-semibold transition-all shadow-sm">
-            <Upload size={16} /> Import Bulk
+            <Upload size={16} className="text-indigo-600" /> Import Bulk
           </button>
           <button onClick={() => { setEditItem(null); setShowModal(true) }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#3b2dd3] hover:bg-[#3427ba] text-white rounded-lg text-[14px] font-semibold transition-all shadow-md">
+            className="flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-indigo-700 text-white rounded-lg text-[14px] font-semibold transition-all shadow-md">
             <Plus size={18} /> Add New Class
           </button>
         </div>
       </motion.div>
 
       {/* KPI Cards */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={1} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={1} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {stats.map((stat, i) => (
           <div key={i} className="bg-white border border-[#E5E7EB] rounded-2xl p-5 flex items-center gap-4 shadow-sm">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
@@ -207,58 +207,6 @@ export default function ClassesPage() {
             </div>
           </div>
         ))}
-      </motion.div>
-
-      {/* Analytics Row */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Building Distribution */}
-        <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-[15px] font-bold text-gray-900 uppercase tracking-wide">Hall Distribution</h3>
-            <MapPin size={16} className="text-gray-400" />
-          </div>
-          <div className="space-y-4">
-            {buildingDistribution.map(bd => (
-              <div key={bd.name} className="space-y-1.5">
-                <div className="flex items-center justify-between text-[13px] font-medium">
-                  <span className="text-gray-600">{bd.name}</span>
-                  <span className="text-gray-900 font-bold">{bd.count} Halls</span>
-                </div>
-                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(bd.count / (classes.length || 1)) * 100}%` }}
-                    className={`h-full rounded-full ${getBuildingColor(bd.name).split(' ')[1].replace('text', 'bg')}`}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* High Occupancy Alert / Featured Classes */}
-        <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 shadow-sm lg:col-span-2">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-[15px] font-bold text-gray-900 uppercase tracking-wide">Recent Hall Assignments</h3>
-            <div className="flex items-center gap-2 text-[12px] text-gray-500 font-medium">
-              <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-indigo-500"></div> Active</span>
-              <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-amber-500"></div> High Cap</span>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {classes.slice(0, 6).map((c) => (
-              <div key={c.id} className="flex items-center gap-3 p-4 bg-gray-50/50 rounded-xl border border-[#E5E7EB]/50 hover:bg-white hover:shadow-md transition-all cursor-pointer group">
-                <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
-                  {c.hall_number}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[13px] font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">{c.department} - {c.academic_year}</p>
-                  <p className="text-[11px] text-gray-500 truncate">{c.advisor_name}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </motion.div>
 
       {/* Search & Filters */}
@@ -316,7 +264,7 @@ export default function ClassesPage() {
                         {c.hall_number}
                       </div>
                       <div>
-                        <p className="text-[14px] font-bold text-gray-900 group-hover:text-[#3b2dd3] transition-colors">{c.department} - {c.section}</p>
+                        <p className="text-[14px] font-bold text-gray-900 group-hover:text-primary transition-colors">{c.department} - {c.section}</p>
                         <p className="text-[12px] text-gray-500 mt-0.5">ID: {c.id}</p>
                       </div>
                     </Link>
@@ -350,9 +298,9 @@ export default function ClassesPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-[10px] border border-indigo-100 shadow-sm">
-                        {c.advisor_name.split(' ').map(n => n[0]).join('')}
+                        {c.advisor_name?.split(' ').map(n => n[0]).join('') || '??'}
                       </div>
-                      <span className="text-[13px] font-semibold text-gray-700">{c.advisor_name}</span>
+                      <span className="text-[13px] font-semibold text-gray-700">{c.advisor_name || 'Unassigned'}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -383,7 +331,7 @@ export default function ClassesPage() {
             <button className="w-8 h-8 rounded-lg border border-[#E5E7EB] flex items-center justify-center text-gray-400 hover:bg-gray-50 disabled:opacity-50" disabled>
               <ChevronDown size={16} className="rotate-90" />
             </button>
-            <button className="w-8 h-8 rounded-lg bg-[#3b2dd3] text-white flex items-center justify-center text-[13px] font-medium">1</button>
+            <button className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center text-[13px] font-medium">1</button>
             <button className="w-8 h-8 rounded-lg border border-[#E5E7EB] flex items-center justify-center text-gray-600 hover:bg-gray-50">
               <ChevronDown size={16} className="-rotate-90" />
             </button>
@@ -391,51 +339,58 @@ export default function ClassesPage() {
         </div>
       </motion.div>
 
-      {/* Modals */}
-      <AnimatePresence>
-        {showModal && (
-          <ClassModal 
-            editItem={editItem} 
-            loading={loading} 
-            faculty={faculty}
-            onSave={handleSave} 
-            onClose={() => { setShowModal(false); setEditItem(null) }} 
-          />
-        )}
-      </AnimatePresence>
+      {/* Modals — rendered via Portal to avoid framer-motion transform break */}
+      <PortalModal>
+        <AnimatePresence>
+          {showModal && (
+            <ClassModal 
+              editItem={editItem} 
+              loading={loading} 
+              faculty={faculty}
+              onSave={handleSave} 
+              onClose={() => { setShowModal(false); setEditItem(null) }} 
+            />
+          )}
+        </AnimatePresence>
+      </PortalModal>
 
-      <AnimatePresence>
-        {showCSV && (
-          <CSVUploader 
-            onUpload={handleBulkUpload} 
-            onClose={() => setShowCSV(false)}
-            sampleHeaders={['hall_number', 'type_building', 'department', 'academic_year', 'section', 'advisor_name', 'strength', 'capacity']} 
-          />
-        )}
-      </AnimatePresence>
+      <PortalModal>
+        <AnimatePresence>
+          {showCSV && (
+            <CSVUploader 
+              onUpload={handleBulkUpload} 
+              onClose={() => setShowCSV(false)}
+              sampleHeaders={['hall_number', 'type_building', 'department', 'academic_year', 'section', 'advisor_name', 'strength', 'capacity']} 
+            />
+          )}
+        </AnimatePresence>
+      </PortalModal>
 
       {/* Delete Confirm */}
-      <AnimatePresence>
-        {deleteId && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl p-7 w-full max-w-sm shadow-xl border border-rose-100">
-              <div className="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-4">
-                <Trash2 size={24} />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900">Remove Class Record?</h3>
-              <p className="text-[14px] text-gray-500 mt-2 leading-relaxed">This will permanently remove the class assignment from the system. This action cannot be undone.</p>
-              <div className="flex gap-3 mt-6">
-                <button onClick={() => setDeleteId(null)} 
-                  className="flex-1 py-2.5 border border-[#E5E7EB] rounded-xl text-[14px] font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
-                <button onClick={() => handleDelete(deleteId)} 
-                  className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-[14px] font-bold transition-all shadow-sm shadow-rose-200">Remove</button>
-              </div>
+      <PortalModal>
+        <AnimatePresence>
+          {deleteId && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[9999] p-4">
+              <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                className="bg-white rounded-[32px] p-8 w-full max-w-sm shadow-2xl border border-rose-100 overflow-hidden relative">
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-rose-500"></div>
+                <div className="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-4">
+                  <Trash2 size={24} />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900">Remove Class Record?</h3>
+                <p className="text-[14px] text-gray-500 mt-2 leading-relaxed">This will permanently remove the class assignment from the system. This action cannot be undone.</p>
+                <div className="flex gap-3 mt-6">
+                  <button onClick={() => setDeleteId(null)} 
+                    className="flex-1 py-2.5 border border-[#E5E7EB] rounded-xl text-[14px] font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+                  <button onClick={() => handleDelete(deleteId)} 
+                    className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-[14px] font-bold transition-all shadow-sm shadow-rose-200">Remove</button>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </PortalModal>
     </div>
   )
 }
@@ -446,10 +401,10 @@ function ClassModal({ editItem, loading, faculty, onSave, onClose }: { editItem:
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0 }} transition={{ duration: 0.2 }}
-        className="bg-white rounded-[24px] w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl border border-[#E5E7EB]">
+      className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[9999] p-4">
+      <motion.div initial={{ scale: 0.9, opacity: 0, y: 30 }} animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 30 }} transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        className="bg-white rounded-[32px] w-full max-w-2xl min-w-[320px] md:min-w-[550px] max-h-[90vh] flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-white/20 overflow-hidden">
         
         <div className="flex items-start justify-between px-8 py-6 border-b border-[#E5E7EB]">
           <div>
@@ -500,7 +455,7 @@ function ClassModal({ editItem, loading, faculty, onSave, onClose }: { editItem:
         <div className="flex items-center justify-end gap-3 px-8 py-6 border-t border-[#E5E7EB] bg-gray-50/50 rounded-b-[24px]">
           <button onClick={onClose} className="px-6 py-2.5 bg-white border border-[#E5E7EB] rounded-xl text-[14px] font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm">Cancel</button>
           <button onClick={() => onSave(form)} disabled={loading || !form.hall_number || !form.department}
-            className="px-6 py-2.5 bg-[#3b2dd3] hover:bg-[#3427ba] disabled:opacity-50 text-white rounded-xl text-[14px] font-bold transition-colors shadow-md">
+            className="px-6 py-2.5 bg-primary hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl text-[14px] font-bold transition-colors shadow-md">
             {loading ? 'Processing...' : editItem ? 'Update Class' : 'Register Class'}
           </button>
         </div>

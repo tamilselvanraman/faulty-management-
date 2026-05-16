@@ -1,44 +1,40 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-primary: #3525cd;
+  --color-primary: #4F46E5;
   --color-on-primary: #ffffff;
-  --color-primary-container: #4f46e5;
-  --color-on-primary-container: #dad7ff;
-  --color-primary-fixed: #e2dfff;
-  --color-on-primary-fixed: #0f0069;
+  --color-primary-container: #eef2ff;
+  --color-on-primary-container: #312e81;
   
-  --color-secondary: #575e70;
+  --color-secondary: #111827;
   --color-on-secondary: #ffffff;
-  --color-secondary-container: #d9dff5;
-  --color-on-secondary-container: #5c6274;
-  
-  --color-tertiary: #7e3000;
+  --color-secondary-container: #f3f4f6;
+  --color-on-secondary-container: #111827;
+
+  --color-tertiary: #A54100;
   --color-on-tertiary: #ffffff;
-  --color-tertiary-container: #a44100;
-  --color-on-tertiary-container: #ffd2be;
+  --color-tertiary-container: #ffedd5;
+  --color-on-tertiary-container: #7c2d12;
+
+  --color-neutral: #777681;
+  --color-on-neutral: #ffffff;
   
-  --color-error: #ba1a1a;
-  --color-on-error: #ffffff;
-  --color-error-container: #ffdad6;
-  --color-on-error-container: #93000a;
+  --color-background: #F4F5F7;
+  --color-on-background: #111827;
   
-  --color-background: #fcf8ff;
-  --color-on-background: #1b1b24;
+  --color-surface: #ffffff;
+  --color-on-surface: #111827;
+  --color-surface-variant: #f3f4f6;
+  --color-on-surface-variant: #777681;
   
-  --color-surface: #fcf8ff;
-  --color-on-surface: #1b1b24;
-  --color-surface-variant: #e4e1ee;
-  --color-on-surface-variant: #464555;
-  
-  --color-outline: #777587;
-  --color-outline-variant: #c7c4d8;
+  --color-outline: #e5e7eb;
+  --color-outline-variant: #f3f4f6;
   
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f5f2ff;
-  --color-surface-container: #f0ecf9;
-  --color-surface-container-high: #eae6f4;
-  --color-surface-container-highest: #e4e1ee;
+  --color-surface-container-low: #f9fafb;
+  --color-surface-container: #f3f4f6;
+  --color-surface-container-high: #e5e7eb;
+  --color-surface-container-highest: #d1d5db;
 
   --font-sans: var(--font-inter), "Inter", sans-serif;
   
@@ -52,39 +48,39 @@
   --spacing-gutter: 24px;
   --spacing-container-max: 1440px;
 
-  /* Typography Scale from design */
-  --font-size-h1: 36px;
-  --font-weight-h1: 700;
-  --line-height-h1: 1.2;
-  --letter-spacing-h1: -0.02em;
+  /* Typography Scale */
+  --font-size-h1: 2.5rem;
+  --font-weight-h1: 800;
+  --line-height-h1: 1.1;
+  --letter-spacing-h1: -0.04em;
 
-  --font-size-h2: 24px;
-  --font-weight-h2: 600;
-  --line-height-h2: 1.3;
-  --letter-spacing-h2: -0.01em;
+  --font-size-h2: 1.875rem;
+  --font-weight-h2: 700;
+  --line-height-h2: 1.2;
+  --letter-spacing-h2: -0.02em;
 
-  --font-size-h3: 18px;
+  --font-size-h3: 1.25rem;
   --font-weight-h3: 600;
   --line-height-h3: 1.4;
   --letter-spacing-h3: -0.01em;
 
-  --font-size-body-base: 16px;
+  --font-size-body-base: 1rem;
   --font-weight-body-base: 400;
   --line-height-body-base: 1.6;
 
-  --font-size-body-sm: 14px;
+  --font-size-body-sm: 0.875rem;
   --font-weight-body-sm: 400;
   --line-height-body-sm: 1.5;
 
-  --font-size-label-md: 14px;
+  --font-size-label-md: 0.875rem;
   --font-weight-label-md: 500;
   --line-height-label-md: 1;
   --letter-spacing-label-md: 0.01em;
 
-  --font-size-label-caps: 12px;
-  --font-weight-label-caps: 600;
+  --font-size-label-caps: 0.75rem;
+  --font-weight-label-caps: 700;
   --line-height-label-caps: 1;
-  --letter-spacing-label-caps: 0.05em;
+  --letter-spacing-label-caps: 0.06em;
 }
 
 @layer base {
@@ -124,11 +120,19 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #D1D5DB;
   }
+
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20;
+  }
+
+  .shadow-premium {
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 4px 10px -5px rgba(0, 0, 0, 0.02);
+  }
+
+  .shadow-card {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05), 0 12px 24px rgba(0, 0, 0, 0.05);
+  }
 }
 
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-  vertical-align: middle;
-}
 
 

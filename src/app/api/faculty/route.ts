@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     const parsed = facultySchema.safeParse(body)
 
     if (!parsed.success) {
-      return NextResponse.json({ data: null, error: parsed.error.errors[0].message }, { status: 400 })
+      return NextResponse.json({ data: null, error: parsed.error.issues[0].message }, { status: 400 })
     }
 
     const { data, error } = await supabase.from('faculty').insert(parsed.data).select().single()
@@ -48,3 +48,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ data: null, error: err.message ?? 'Failed to create faculty' }, { status: 500 })
   }
 }
+

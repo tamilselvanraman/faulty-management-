@@ -22,7 +22,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const parsed = facultySchema.partial().safeParse(body)
 
     if (!parsed.success) {
-      return NextResponse.json({ data: null, error: parsed.error.errors[0].message }, { status: 400 })
+      return NextResponse.json({ data: null, error: parsed.error.issues[0].message }, { status: 400 })
     }
 
     const { data, error } = await supabase.from('faculty').update(parsed.data).eq('id', id).select().single()
