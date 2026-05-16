@@ -12,9 +12,6 @@ export const metadata: Metadata = {
   keywords: 'college management, ERP, faculty, students, timetable',
 }
 
-// Add global styles for Material Symbols
-const materialSymbolsLink = "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap";
-
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -24,10 +21,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
-      </head>
-      <body className={`${inter.variable} font-sans antialiased bg-[#F9FAFB] text-[#111827]`}>
+      <body className={`${inter.variable} font-sans antialiased bg-background text-on-background`}>
         <ClientLayoutShell>
           {children}
         </ClientLayoutShell>
