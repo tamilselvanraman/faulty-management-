@@ -145,7 +145,7 @@ export default function DashboardPage() {
               <BarChart3 size={20} />
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={280} minWidth={0}>
             <BarChart data={mockStudentDept} barCategoryGap="30%">
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-outline)" vertical={false} opacity={0.2} />
               <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700, fill: 'var(--color-on-surface-variant)' }} axisLine={false} tickLine={false} />
@@ -180,7 +180,7 @@ export default function DashboardPage() {
             <p className="text-sm font-medium text-on-surface-variant mt-1">Status breakdown</p>
           </div>
           <div className="flex items-center justify-center py-4">
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={200} minWidth={0}>
               <PieChart>
                 <Pie data={taskPieData} cx="50%" cy="50%" innerRadius={60} outerRadius={85} paddingAngle={10} dataKey="value">
                   {taskPieData.map((entry, i) => (
@@ -217,7 +217,7 @@ export default function DashboardPage() {
             <TrendingUp size={14} /> +3.2% increase
           </div>
         </div>
-        <ResponsiveContainer width="100%" height={240}>
+        <ResponsiveContainer width="100%" height={240} minWidth={0}>
           <LineChart data={mockAttendance}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-outline)" vertical={false} opacity={0.2} />
             <XAxis dataKey="month" tick={{ fontSize: 11, fontWeight: 700, fill: 'var(--color-on-surface-variant)' }} axisLine={false} tickLine={false} />
