@@ -23,7 +23,7 @@ const fadeUp = {
   visible: (i = 0) => ({ 
     opacity: 1, 
     y: 0, 
-    transition: { delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] as [number, number, number, number] } 
+    transition: { delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] } 
   }),
 }
 
@@ -145,7 +145,7 @@ export default function ClassDetailsPage({ params }: { params: Promise<{ id: str
                 </button>
               </div>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto scrollbar-hide">
               <table className="w-full text-left border-collapse min-w-[700px]">
                 <thead>
                   <tr className="bg-gray-50/50">

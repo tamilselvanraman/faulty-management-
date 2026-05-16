@@ -14,7 +14,7 @@ import {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
-  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.07, duration: 0.4, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }),
+  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.07, duration: 0.4, ease: [0.22, 1, 0.36, 1] as any } }),
 }
 
 const DEPT_COLORS = ['#0f172a', '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1']
@@ -62,15 +62,15 @@ interface KPICard {
   change: string
   positive: boolean
   icon: React.ReactNode
-  accent: string
+  gradient: string
 }
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<KPICard[]>([
-    { label: 'Total Faculty', value: '—', change: '+4 this month', positive: true, icon: <Users size={22} />, accent: 'bg-slate-900' },
-    { label: 'Active Students', value: '—', change: '+12% vs last year', positive: true, icon: <GraduationCap size={22} />, accent: 'bg-slate-800' },
-    { label: 'Total Classes', value: '—', change: 'Across 5 departments', positive: true, icon: <BookOpen size={22} />, accent: 'bg-slate-700' },
-    { label: 'Events This Month', value: '—', change: '4 upcoming', positive: true, icon: <CalendarDays size={22} />, accent: 'bg-slate-600' },
+    { label: 'Total Faculty', value: '—', change: '+4 this month', positive: true, icon: <Users size={24} />, gradient: 'from-indigo-500 via-purple-500 to-pink-500' },
+    { label: 'Active Students', value: '—', change: '+12% vs last year', positive: true, icon: <GraduationCap size={24} />, gradient: 'from-emerald-400 via-teal-500 to-cyan-500' },
+    { label: 'Total Classes', value: '—', change: 'Across 5 departments', positive: true, icon: <BookOpen size={24} />, gradient: 'from-orange-400 via-amber-500 to-rose-500' },
+    { label: 'Events This Month', value: '—', change: '4 upcoming', positive: true, icon: <CalendarDays size={24} />, gradient: 'from-blue-500 via-indigo-500 to-cyan-500' },
   ])
   const [loading, setLoading] = useState(true)
 
@@ -111,21 +111,28 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         {stats.map((s, i) => (
           <motion.div key={s.label} variants={fadeUp} initial="hidden" animate="visible" custom={i + 1}>
-            <div className="bg-surface rounded-[32px] border border-outline p-6 hover:shadow-xl hover:border-primary/20 transition-all duration-300 group">
-              <div className="flex items-center justify-between mb-6">
-                <div className={`w-12 h-12 rounded-2xl ${s.accent} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+            <div className={`relative overflow-hidden rounded-[32px] p-6 text-white shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group bg-gradient-to-br ${s.gradient}`}>
+              {/* Glass overlay */}
+              <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              {/* Decorative blob */}
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500" />
+              
+              <div className="relative z-10 flex items-center justify-between mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
                   {s.icon}
                 </div>
-                <span className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg ${s.positive ? 'bg-secondary/10 text-secondary' : 'bg-red-500/10 text-red-600'}`}>
+                <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md border border-white/20 text-white shadow-sm">
                   <ArrowUpRight size={14} />
                   {s.change.split(' ')[0]}
                 </span>
               </div>
-              <p className="text-4xl font-black text-on-surface tracking-tighter">
-                {loading ? <span className="inline-block w-20 h-10 bg-surface-variant rounded-xl animate-pulse" /> : s.value}
-              </p>
-              <p className="text-xs font-black text-on-surface-variant mt-2 uppercase tracking-[0.15em] opacity-60">{s.label}</p>
-              <p className="text-[11px] font-bold text-on-surface-variant/40 mt-1">{s.change}</p>
+              <div className="relative z-10">
+                <p className="text-4xl font-black tracking-tighter drop-shadow-sm">
+                  {loading ? <span className="inline-block w-20 h-10 bg-white/20 rounded-xl animate-pulse" /> : s.value}
+                </p>
+                <p className="text-xs font-black mt-2 uppercase tracking-[0.15em] opacity-90">{s.label}</p>
+                <p className="text-[11px] font-bold mt-1 text-white/70">{s.change}</p>
+              </div>
             </div>
           </motion.div>
         ))}

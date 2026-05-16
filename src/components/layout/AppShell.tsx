@@ -48,9 +48,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         />
 
         {/* Main content */}
-        <div className="flex flex-col flex-1 min-w-0 transition-all duration-300 relative">
+        <div className="flex flex-col flex-1 min-w-0 transition-all duration-300 relative overflow-y-auto custom-scrollbar scroll-smooth">
           {/* Top Header */}
-          <header className="h-20 bg-surface/60 backdrop-blur-xl border-b border-outline/50 flex items-center justify-between px-6 lg:px-10 sticky top-0 z-30 transition-all duration-300">
+          <header className="h-20 bg-surface/60 backdrop-blur-xl border-b border-outline/50 flex items-center justify-between px-6 lg:px-10 relative z-30 transition-all duration-300 shrink-0">
             <div className="flex items-center gap-6">
               <button
                 onClick={() => setMobileSidebarOpen(true)}
@@ -92,7 +92,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          <main className="flex-1 overflow-y-auto p-6 lg:p-10 custom-scrollbar scroll-smooth">
+          <main className="flex-1 p-6 lg:p-10">
             <div className="max-w-[1600px] mx-auto w-full">
               {children}
             </div>

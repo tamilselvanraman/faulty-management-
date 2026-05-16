@@ -58,7 +58,7 @@ const fadeUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+    transition: { delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] as any }
   })
 }
 
@@ -166,8 +166,8 @@ function TimetableContent() {
       <AnimatePresence>
         {selectedDept && (
           <motion.div 
-            initial={{ y: -100 }} animate={{ y: 0 }} exit={{ y: -100 }}
-            className="sticky top-0 z-[60] w-full glass border-b border-slate-200/60 shadow-premium"
+            initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+            className="w-full bg-white border-b border-slate-200/60"
           >
             <div className="max-w-[1600px] mx-auto px-4 h-12 flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
@@ -178,11 +178,11 @@ function TimetableContent() {
                   <ChevronLeft size={14} />
                 </button>
                 <div className="h-4 w-px bg-slate-200 mx-0.5" />
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-1.5">
-                    <h2 className="text-xs font-black text-slate-900 tracking-tight">{selectedDept} Scheduler</h2>
-                    <span className="px-1 py-0.5 rounded-md bg-primary/10 text-primary text-[7px] font-black uppercase tracking-wider">Enterprise Mode</span>
-                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1.5">
+                      <h2 className="text-[14px] font-black text-slate-900 tracking-tight">{selectedDept} Institutional Timetable</h2>
+                      <span className="px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-600 text-[8px] font-black uppercase tracking-wider border border-indigo-100">Live View</span>
+                    </div>
                   <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider leading-none mt-0.5">Main Campus • Batch 2024-28</p>
                 </div>
               </div>
@@ -233,128 +233,161 @@ function TimetableContent() {
     <motion.div
       variants={fadeUp}
       custom={2}
-      className="space-y-5"
+      className="space-y-4"
     >
-      <h1 className="text-5xl xl:text-7xl font-black tracking-[-0.06em] leading-[0.95] text-slate-900">
-        Academic{" "}
+      <h1 className="text-4xl xl:text-6xl font-black tracking-[-0.04em] leading-[1.1] text-slate-900">
+        Institutional{" "}
         <span className="relative inline-block">
-          <span className="bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
-            Logistics
+          <span className="bg-gradient-to-r from-indigo-600 to-violet-500 bg-clip-text text-transparent">
+            Timetable
           </span>
-
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="absolute -bottom-2 left-0 h-3 w-full origin-left rounded-full bg-primary/10"
+            className="absolute -bottom-1 left-0 h-2 w-full origin-left rounded-full bg-indigo-100"
           />
-        </span>
-
-        <br />
-
-        <span className="text-slate-900">
-          Engineered.
         </span>
       </h1>
 
       {/* FIXED DESCRIPTION */}
-      <p className="max-w-2xl text-base leading-8 text-slate-500">
-        Orchestrate institutional resources with real-time timetable
-        synchronization, automated slot optimization, and unified
-        departmental scheduling workflows across the academic ecosystem.
-      </p>
-    </motion.div>
-
-    {/* Buttons */}
-    <motion.div
-      variants={fadeUp}
-      custom={3}
-      className="flex flex-wrap items-center gap-4 pt-2"
-    >
-      <button className="group relative flex h-14 items-center gap-3 overflow-hidden rounded-2xl bg-primary px-7 text-sm font-bold uppercase tracking-wider text-white shadow-2xl shadow-primary/20 transition-all duration-300 hover:scale-[1.02]">
-        
-        <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
-
-        <Plus
-          size={18}
-          className="relative z-10 transition-transform duration-300 group-hover:rotate-90"
-        />
-
-        <span className="relative z-10">
-          Generate Schedule
-        </span>
-      </button>
-
-      <button className="flex h-14 items-center gap-3 rounded-2xl border border-slate-200 bg-white/80 px-7 text-sm font-bold uppercase tracking-wider text-slate-700 backdrop-blur-xl transition-all duration-300 hover:bg-slate-50">
-        <Monitor size={18} className="text-slate-400" />
-
-        System Health
-      </button>
+    <motion.p
+  variants={fadeUp}
+  custom={3}
+  className="
+    max-w-[500px]
+    text-[18px]
+    leading-relaxed
+    text-slate-500
+  "
+>
+  Unified institutional scheduling system for real-time timetable synchronization and automated resource management across the academic ecosystem.
+</motion.p>
     </motion.div>
   </div>
 
   {/* RIGHT STATS */}
-  <div className="grid grid-cols-2 gap-5">
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
     {[
       {
         label: 'Active Depts',
         value: '08',
-        icon: Building2,
-        color: '#6366f1',
+        icon: <Building2 size={18} />,
+        gradient: 'from-indigo-500 via-purple-500 to-pink-500',
+        change: '+2 this term',
       },
       {
         label: 'Classes Today',
         value: '142',
-        icon: Clock,
-        color: '#10b981',
+        icon: <Clock size={18} />,
+        gradient: 'from-emerald-400 via-teal-500 to-cyan-500',
+        change: '92% attendance',
       },
       {
         label: 'Faculty Active',
         value: '86%',
-        icon: Users,
-        color: '#f59e0b',
+        icon: <Users size={18} />,
+        gradient: 'from-orange-400 via-amber-500 to-rose-500',
+        change: 'Fully staffed',
       },
       {
         label: 'Resource Load',
         value: 'Low',
-        icon: BarChart3,
-        color: '#0ea5e9',
+        icon: <BarChart3 size={18} />,
+        gradient: 'from-blue-500 via-indigo-500 to-cyan-500',
+        change: 'Optimal state',
       },
     ].map((stat, i) => (
-      <motion.div
-        key={stat.label}
-        variants={fadeUp}
-        custom={4 + i}
-        className="group relative overflow-hidden rounded-[30px] border border-slate-200/70 bg-white/80 p-6 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
-      >
-        {/* Background Glow */}
-        <div className="absolute top-0 right-0 h-24 w-24 translate-x-6 -translate-y-6 rounded-full bg-slate-100 opacity-0 transition-all duration-500 group-hover:opacity-100" />
+      
+<motion.div
+  key={stat.label}
+  variants={fadeUp}
+  custom={4 + i}
+  className={`
+    relative overflow-hidden
+    rounded-[20px]
+    px-4 py-3
+    text-white
+    shadow-md
+    hover:shadow-xl
+    hover:-translate-y-1
+    transition-all duration-300
+    group
+    h-[140px]
+    w-full
+    bg-gradient-to-br ${stat.gradient}
+  `}
+>
+  {/* Overlay */}
+  <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        <div className="relative z-10 flex h-full flex-col justify-between">
-          
-          {/* Icon */}
-          <div
-            className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl shadow-sm"
-            style={{
-              backgroundColor: `${stat.color}15`,
-              color: stat.color,
-            }}
-          >
-            <stat.icon size={20} />
-          </div>
+  {/* Small Glow */}
+  <div className="absolute -top-5 -right-5 w-20 h-20 bg-white/10 rounded-full blur-2xl" />
 
-          {/* Value */}
-          <div className="space-y-1">
-            <div className="text-4xl font-black tracking-tight text-slate-900">
-              {stat.value}
-            </div>
+  {/* Top */}
+  <div className="relative z-10 flex items-start justify-between mb-5">
 
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-              {stat.label}
-            </div>
-          </div>
-        </div>
-      </motion.div>
+    {/* Icon */}
+    <div
+      className="
+        w-9 h-9
+        rounded-xl
+        bg-white/15
+        border border-white/15
+        backdrop-blur-md
+        flex items-center justify-center
+      "
+    >
+      <div className="scale-[0.7]">
+        {stat.icon}
+      </div>
+    </div>
+
+    {/* Badge */}
+    <span
+      className="
+        flex items-center gap-1
+        text-[6px]
+        font-bold
+        uppercase
+        tracking-[0.15em]
+        px-2 py-1
+        rounded-md
+        bg-white/15
+        border border-white/15
+      "
+    >
+      <ArrowUpRight size={9} />
+      {stat.change.split(" ")[0]}
+    </span>
+  </div>
+
+  {/* Bottom Content */}
+  <div className="relative z-10">
+    <h2 className="text-[20px] leading-none font-black tracking-tight">
+      {stat.value}
+    </h2>
+
+    <p
+      className="
+        mt-2
+        text-[10px]
+        font-extrabold
+        uppercase
+        tracking-[0.18em]
+        text-white/90
+      "
+    >
+      {stat.label}
+    </p>
+
+    <p className="mt-1 text-[10px] text-white/70 font-medium">
+      {stat.change}
+    </p>
+  </div>
+</motion.div>
+
+
     ))}
   </div>
 </div>
@@ -449,8 +482,8 @@ function TimetableContent() {
               className="relative"
             >
               <div className="flex flex-col bg-white rounded-[24px] border border-slate-200/60 shadow-premium">
-                <div className="flex-1">
-                  <table className="w-full border-separate border-spacing-0 table-fixed">
+                <div className="flex-1 overflow-x-auto scrollbar-hide">
+                  <table className="w-full min-w-[1000px] border-separate border-spacing-0 table-fixed">
                     <thead className="sticky top-0 z-[70]">
                       <tr className="bg-white">
                         <th className="sticky left-0 top-0 z-[90] bg-white p-3 text-left border-r border-b border-slate-200 w-[100px] shadow-[4px_0_12px_rgba(0,0,0,0.03)]">

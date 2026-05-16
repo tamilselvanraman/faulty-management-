@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, CheckCircle2, Clock, AlertCircle, Circle, X, Edit2, Trash2, Flag, ChevronDown, Filter, User, Calendar, AlertTriangle, Upload, Download, Search } from 'lucide-react'
+import { Plus, CheckCircle2, Clock, AlertCircle, Circle, X, Edit2, Trash2, Flag, ChevronDown, Filter, User, Calendar, AlertTriangle, Upload, Download, Search, ArrowUpRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 import CSVUploader from '@/components/ui/CSVUploader'
 
@@ -43,7 +43,7 @@ const MOCK_TASKS: Task[] = [
 ]
 
 const STATUS_LABELS = ['all', 'pending', 'in_progress', 'completed', 'cancelled']
-const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }) }
+const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] as any } }) }
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>(MOCK_TASKS)
@@ -130,21 +130,35 @@ export default function TasksPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Pending', value: counts.pending, color: 'text-on-surface-variant', bg: 'bg-surface-variant/30', icon: <Circle size={16} /> },
-          { label: 'Working', value: counts.in_progress, color: 'text-primary', bg: 'bg-primary/5', icon: <Clock size={16} /> },
-          { label: 'Completed', value: counts.completed, color: 'text-emerald-600', bg: 'bg-emerald-50', icon: <CheckCircle2 size={16} /> },
-          { label: 'Critical', value: counts.urgent, color: 'text-tertiary', bg: 'bg-tertiary/5', icon: <AlertTriangle size={16} /> },
+          { label: 'Pending', value: counts.pending, gradient: 'from-amber-400 via-orange-500 to-rose-500', change: '-2% vs last week', icon: <Circle size={24} /> },
+          { label: 'Working', value: counts.in_progress, gradient: 'from-blue-500 via-indigo-500 to-purple-500', change: '+5% this week', icon: <Clock size={24} /> },
+          { label: 'Completed', value: counts.completed, gradient: 'from-emerald-400 via-teal-500 to-cyan-500', change: '+12% this month', icon: <CheckCircle2 size={24} /> },
+          { label: 'Critical', value: counts.urgent, gradient: 'from-rose-500 via-red-500 to-pink-500', change: 'Urgent Action', icon: <AlertTriangle size={24} /> },
         ].map((s, i) => (
           <motion.div key={s.label} custom={i} variants={fadeUp} initial="hidden" animate="visible"
-            className="bg-white rounded-3xl border border-outline p-5 flex items-center justify-between shadow-premium group hover:border-primary/20 transition-all">
-            <div>
-              <p className="text-[11px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] mb-1">{s.label}</p>
-              <h3 className={`text-2xl font-black ${s.color}`}>{s.value}</h3>
+            className={`relative overflow-hidden rounded-[32px] p-6 text-white shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group bg-gradient-to-br ${s.gradient}`}>
+            {/* Glass overlay */}
+            <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* Decorative blob */}
+            <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500" />
+            
+            <div className="relative z-10 flex items-center justify-between mb-6">
+              <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                {s.icon}
+              </div>
+              <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md border border-white/20 text-white shadow-sm">
+                <ArrowUpRight size={14} />
+                {s.change.split(' ')[0]}
+              </span>
             </div>
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${s.bg} ${s.color} transition-transform group-hover:scale-110`}>
-              {s.icon}
+            <div className="relative z-10">
+              <p className="text-4xl font-black tracking-tighter drop-shadow-sm">
+                {s.value}
+              </p>
+              <p className="text-xs font-black mt-2 uppercase tracking-[0.15em] opacity-90">{s.label}</p>
+              <p className="text-[11px] font-bold mt-1 text-white/70">{s.change}</p>
             </div>
           </motion.div>
         ))}

@@ -102,7 +102,7 @@ const fadeUp = {
   visible: (i = 0) => ({ 
     opacity: 1, 
     y: 0, 
-    transition: { delay: i * 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } 
+    transition: { delay: i * 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] } 
   }),
 }
 
@@ -220,21 +220,25 @@ export default function CommitteesPage() {
   }
 
   const stats = [
-    { label: 'TOTAL COMMITTEES', value: committees.length, icon: <Users size={20} />, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { label: 'ACTIVE MEMBERS', value: committees.reduce((a, c) => a + c.member_count, 0), icon: <Users size={20} />, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'PENDING ACTIONS', value: 12, icon: <Clock size={20} />, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'MEETINGS THIS MONTH', value: 8, icon: <Calendar size={20} />, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+    { label: 'TOTAL COMMITTEES', value: committees.length, icon: <Users size={24} />, gradient: 'from-indigo-500 via-purple-500 to-pink-500', change: '+2 this year' },
+    { label: 'ACTIVE MEMBERS', value: committees.reduce((a, c) => a + c.member_count, 0), icon: <Users size={24} />, gradient: 'from-emerald-400 via-teal-500 to-cyan-500', change: '+15 this term' },
+    { label: 'PENDING ACTIONS', value: 12, icon: <Clock size={24} />, gradient: 'from-orange-400 via-amber-500 to-rose-500', change: '-3 vs last week' },
+    { label: 'MEETINGS THIS MONTH', value: 8, icon: <Calendar size={24} />, gradient: 'from-blue-500 via-indigo-500 to-cyan-500', change: '+1 scheduled' },
   ]
 
   return (
     <div className="p-8 space-y-8 max-w-7xl mx-auto relative z-10">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-1">
-          <h1 className="text-4xl font-bold text-[#1b1b24] tracking-tight">Committees Management</h1>
-          <p className="text-[#575e70] text-lg">Oversee academic and administrative committees and their governance.</p>
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+        <div className="space-y-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#1b1b24] tracking-tight leading-tight">
+            Committees Management
+          </h1>
+          <p className="text-[#575e70] text-sm sm:text-base md:text-lg font-medium max-w-2xl">
+            Oversee academic and administrative committees and their governance.
+          </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <button 
             onClick={() => {
               const headers = ['name', 'type', 'category', 'description', 'chair_name', 'member_count', 'formed_date']
@@ -248,35 +252,58 @@ export default function CommitteesPage() {
               document.body.removeChild(link)
               toast.success('Template downloaded')
             }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 transition-all shadow-sm"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-all shadow-sm text-xs sm:text-sm"
           >
             <Download size={18} />
-            <span>Download Format</span>
+            <span className="hidden sm:inline">Download Format</span>
+            <span className="sm:hidden">Format</span>
           </button>
           <button 
             onClick={() => setShowCSV(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 transition-all shadow-sm"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-all shadow-sm text-xs sm:text-sm"
           >
             <Upload size={18} />
-            <span>Bulk Import</span>
+            <span className="hidden sm:inline">Bulk Import</span>
+            <span className="sm:hidden">Import</span>
           </button>
           <button 
             onClick={() => { setEditItem(null); setShowModal(true) }}
-            className="flex items-center gap-2 bg-[#4f46e5] text-white font-semibold px-6 py-2.5 rounded-xl shadow-md hover:bg-indigo-700 active:opacity-80 transition-all"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#4f46e5] text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 active:scale-95 transition-all text-sm sm:text-base"
           >
             <Plus size={18} />
-            <span>Create New Committee</span>
+            <span>New Committee</span>
           </button>
         </div>
       </div>
 
       {/* Dashboard Stats Summary (Bento Minimal) */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <div key={stat.label} className="bg-white p-6 border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
-            <p className="text-[10px] font-black text-[#575e70] mb-1 uppercase tracking-widest">{stat.label}</p>
-            <p className="text-3xl font-bold text-[#1b1b24]">{stat.value}</p>
-          </div>
+          <motion.div key={stat.label} variants={fadeUp} initial="hidden" animate="visible" custom={i + 1}>
+            <div className={`relative overflow-hidden rounded-[32px] p-6 text-white shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group bg-gradient-to-br ${stat.gradient}`}>
+              {/* Glass overlay */}
+              <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              {/* Decorative blob */}
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500" />
+              
+              <div className="relative z-10 flex items-center justify-between mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  {stat.icon}
+                </div>
+                <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md border border-white/20 text-white shadow-sm">
+                  <ArrowUpRight size={14} />
+                  {stat.change.split(' ')[0]}
+                </span>
+              </div>
+              <div className="relative z-10">
+                <p className="text-4xl font-black tracking-tighter drop-shadow-sm">
+                  {stat.value}
+                </p>
+                <p className="text-xs font-black mt-2 uppercase tracking-[0.15em] opacity-90">{stat.label}</p>
+                <p className="text-[11px] font-bold mt-1 text-white/70">{stat.change}</p>
+              </div>
+            </div>
+          </motion.div>
         ))}
       </div>
 
@@ -507,8 +534,8 @@ function CommitteeTable({ committees, onEdit, onDelete, onView }: {
 }) {
   return (
     <div className="bg-white rounded-[32px] border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500">
-      <div className="overflow-x-auto no-scrollbar">
-        <table className="w-full text-left border-collapse">
+      <div className="overflow-x-auto scrollbar-hide">
+        <table className="w-full min-w-[1000px] text-left border-collapse">
           <thead>
             <tr className="bg-slate-50/50 border-b border-slate-100">
               <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Council Identifier</th>

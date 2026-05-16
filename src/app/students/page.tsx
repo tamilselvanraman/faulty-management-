@@ -7,7 +7,7 @@ import {
   ChevronDown, User, Upload, Users, Award, TrendingUp, 
   AlertCircle, FileText, MoreVertical, Download, ChevronRight,
   ArrowLeft, Mail, Phone, Calendar, MapPin, Eye, CheckCircle,
-  Star, UserCheck
+  Star, UserCheck, ArrowUpRight
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import CSVUploader from '@/components/ui/CSVUploader'
@@ -45,7 +45,7 @@ const STATUS_STYLES: Record<string, string> = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
-  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }),
+  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] as any } }),
 }
 
 const getDeptStyle = (dept: string) => {
@@ -181,10 +181,10 @@ export default function StudentsPage() {
   }
 
   const stats = [
-    { label: 'TOTAL STUDENTS', value: students.length, icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { label: 'ACTIVE ENROLLMENT', value: students.filter(s => s.status === 'active').length, icon: GraduationCap, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'LOW ATTENDANCE', value: students.filter(s => (s.attendance_percentage ?? 100) < 75).length, icon: AlertCircle, color: 'text-rose-600', bg: 'bg-rose-50' },
-    { label: 'TOP PERFORMERS', value: students.filter(s => s.is_top_5).length, icon: Star, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: 'TOTAL STUDENTS', value: students.length, icon: <Users size={24} />, gradient: 'from-indigo-500 via-purple-500 to-pink-500', change: '+12% this year' },
+    { label: 'ACTIVE ENROLLMENT', value: students.filter(s => s.status === 'active').length, icon: <GraduationCap size={24} />, gradient: 'from-emerald-400 via-teal-500 to-cyan-500', change: '+5% this term' },
+    { label: 'LOW ATTENDANCE', value: students.filter(s => (s.attendance_percentage ?? 100) < 75).length, icon: <AlertCircle size={24} />, gradient: 'from-orange-400 via-amber-500 to-rose-500', change: '-2% vs last week' },
+    { label: 'TOP PERFORMERS', value: students.filter(s => s.is_top_5).length, icon: <Star size={24} />, gradient: 'from-blue-500 via-indigo-500 to-cyan-500', change: '+10% improvement' },
   ]
 
   return (
@@ -238,16 +238,30 @@ export default function StudentsPage() {
       </motion.div>
 
       {/* Quick Stats Summary */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group">
-            <div className="flex items-center gap-3 mb-2">
-              <div className={`p-2 rounded-lg ${stat.bg.replace('indigo', 'slate')} ${stat.color.replace('indigo', 'slate')}`}>
-                <stat.icon size={16} />
+          <div key={i} className={`relative overflow-hidden rounded-[32px] p-6 text-white shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group bg-gradient-to-br ${stat.gradient}`}>
+            {/* Glass overlay */}
+            <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* Decorative blob */}
+            <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500" />
+            
+            <div className="relative z-10 flex items-center justify-between mb-6">
+              <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                {stat.icon}
               </div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">{stat.label}</span>
+              <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md border border-white/20 text-white shadow-sm">
+                <ArrowUpRight size={14} />
+                {stat.change.split(' ')[0]}
+              </span>
             </div>
-            <p className="text-2xl font-black text-slate-900 group-hover:text-primary transition-colors">{stat.value}</p>
+            <div className="relative z-10">
+              <p className="text-4xl font-black tracking-tighter drop-shadow-sm">
+                {stat.value}
+              </p>
+              <p className="text-xs font-black mt-2 uppercase tracking-[0.15em] opacity-90">{stat.label}</p>
+              <p className="text-[11px] font-bold mt-1 text-white/70">{stat.change}</p>
+            </div>
           </div>
         ))}
       </motion.div>
@@ -272,25 +286,43 @@ export default function StudentsPage() {
                     initial="hidden"
                     animate="visible"
                     custom={i}
-                    whileHover={{ y: -5, scale: 1.01 }}
+                    whileHover={{ 
+                      y: -12, 
+                      scale: 1.05,
+                      rotateX: 2,
+                      rotateY: 2
+                    }}
                     onClick={() => setSelectedDept(dept)}
-                    className="relative overflow-hidden cursor-pointer p-7 rounded-[28px] border border-slate-100 bg-white hover:border-primary/20 hover:shadow-2xl hover:shadow-slate-200/50 transition-all group h-[180px] flex flex-col justify-between"
+                    className="relative overflow-hidden cursor-pointer p-8 rounded-[40px] border border-slate-100 bg-white hover:border-primary/20 hover:shadow-[0_20px_50px_rgba(79,70,229,0.1)] transition-all duration-500 group min-h-[260px] flex flex-col justify-between"
                   >
+                    {/* Premium Decorative Elements */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute -right-12 -top-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
+                    
                     <div className="flex items-start justify-between relative z-10">
-                      <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all shadow-inner">
-                        <GraduationCap size={24} />
+                      <div className="w-16 h-16 rounded-[24px] bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white group-hover:rotate-12 group-hover:scale-110 transition-all duration-500 shadow-sm">
+                        <GraduationCap size={32} />
                       </div>
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg text-[10px] font-black text-slate-400 group-hover:text-primary transition-colors">
-                        {dept}
+                      <div className="flex items-center gap-3">
+                        <div className="px-4 py-1.5 bg-slate-100 rounded-xl text-[10px] font-black text-slate-500 uppercase tracking-widest group-hover:bg-primary/10 group-hover:text-primary transition-colors duration-500">
+                          {dept}
+                        </div>
+                        <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-300 group-hover:text-primary group-hover:border-primary/20 transition-all duration-500 bg-white shadow-sm group-hover:scale-110 group-hover:shadow-md">
+                          <ArrowUpRight size={18} />
+                        </div>
                       </div>
                     </div>
+
                     <div className="relative z-10">
-                      <h3 className="text-xl font-black text-slate-900 mb-1">{dept}</h3>
-                      <p className="text-[13px] font-bold text-slate-400">{count} Active Students</p>
+                      <h3 className="text-3xl font-black text-slate-900 mb-2 tracking-tight group-hover:text-primary transition-colors duration-500">{dept}</h3>
+                      <p className="text-[14px] font-bold text-slate-400 group-hover:text-slate-600 transition-colors duration-500">
+                        Academic Department · <span className="text-slate-900 font-black">{count}</span>
+                      </p>
                     </div>
                     
-                    <div className="absolute -right-6 -bottom-6 text-slate-50 opacity-20 group-hover:opacity-40 transition-opacity">
-                      <Users size={120} />
+                    {/* Subtle Background Mark */}
+                    <div className="absolute -right-8 -bottom-8 text-slate-50 opacity-40 group-hover:opacity-10 transition-all duration-700 transform group-hover:scale-110 group-hover:-rotate-12">
+                      <Users size={160} />
                     </div>
                   </motion.div>
                 )
@@ -320,10 +352,13 @@ export default function StudentsPage() {
                     initial="hidden"
                     animate="visible"
                     custom={i}
-                    whileHover={{ y: -8, scale: 1.02 }}
+                    whileHover={{ y: -12, scale: 1.08 }}
                     onClick={() => setSelectedYear(y)}
-                    className="cursor-pointer bg-white border border-[#E5E7EB] p-10 rounded-[40px] shadow-sm hover:shadow-2xl hover:border-indigo-200 transition-all group text-center"
+                    className="relative cursor-pointer bg-white border border-[#E5E7EB] p-10 rounded-[40px] shadow-sm hover:shadow-2xl hover:border-indigo-200 transition-all group text-center overflow-hidden"
                   >
+                    <div className="absolute top-4 right-4 w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-300 group-hover:text-indigo-600 group-hover:border-indigo-100 transition-all bg-white shadow-sm">
+                      <ArrowUpRight size={18} />
+                    </div>
                     <div className="w-20 h-20 mx-auto rounded-3xl bg-indigo-50 flex items-center justify-center text-indigo-600 mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all transform group-hover:rotate-6 shadow-inner">
                       <Award size={40} />
                     </div>
@@ -373,8 +408,8 @@ export default function StudentsPage() {
 
             {/* List View */}
             <div className="bg-white rounded-[40px] border border-[#E5E7EB] overflow-hidden shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
+              <div className="overflow-x-auto scrollbar-hide">
+                <table className="w-full min-w-[1000px] text-left">
                   <thead>
                     <tr className="bg-gray-50/50 border-b border-[#E5E7EB]">
                       <th className="px-8 py-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Student Identity</th>
@@ -391,7 +426,8 @@ export default function StudentsPage() {
                         initial={{ opacity: 0, x: -15 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.03 }}
-                        className="hover:bg-indigo-50/30 transition-colors group cursor-pointer"
+                        whileHover={{ scale: 1.005, backgroundColor: 'rgba(79, 70, 229, 0.05)' }}
+                        className="transition-all group cursor-pointer border-l-4 border-l-transparent hover:border-l-primary"
                         onClick={() => router.push(`/students/${s.id}`)}
                       >
                         <td className="px-8 py-5">
@@ -538,7 +574,7 @@ function StudentModal({ editItem, loading, onSave, onClose }: { editItem: Studen
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/40 backdrop-blur-xl flex items-center justify-center z-[100] p-4">
       <motion.div initial={{ scale: 0.95, opacity: 0, y: 30 }} animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+        exit={{ scale: 0.95, opacity: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="bg-white rounded-[48px] w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl border border-white">
         
         <div className="flex items-start justify-between px-12 py-10 border-b border-gray-100 bg-gray-50/20 rounded-t-[48px]">

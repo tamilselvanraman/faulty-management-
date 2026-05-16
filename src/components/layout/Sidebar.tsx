@@ -89,6 +89,7 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onMob
               pathname={pathname}
               isActive={isActive}
               isMobile
+              onMobileClose={onMobileClose}
             />
           </motion.aside>
         )}
@@ -103,9 +104,10 @@ interface SidebarContentProps {
   isActive: (href: string) => boolean
   isMobile?: boolean
   onToggleCollapse?: () => void
+  onMobileClose?: () => void
 }
 
-function SidebarContent({ collapsed, isActive, isMobile, onToggleCollapse }: SidebarContentProps) {
+function SidebarContent({ collapsed, isActive, isMobile, onToggleCollapse, onMobileClose }: SidebarContentProps) {
   const router = useRouter()
   const supabase = createClient()
 
@@ -147,7 +149,11 @@ function SidebarContent({ collapsed, isActive, isMobile, onToggleCollapse }: Sid
           const active = isActive(item.href)
 
           return (
-            <Link key={item.href} href={item.href}>
+            <Link 
+              key={item.href} 
+              href={item.href}
+              onClick={() => isMobile && onMobileClose?.()}
+            >
               <div className={`relative flex items-center gap-4 px-4 py-4 rounded-2xl cursor-pointer group transition-all duration-300 ${
                 active
                   ? 'bg-primary text-white shadow-[0_8px_20px_-6px_rgba(79,70,229,0.5)] active-nav-item'
