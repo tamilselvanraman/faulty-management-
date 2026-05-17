@@ -69,7 +69,7 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onMob
             animate={{ x: 0 }}
             exit={{ x: -280 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed left-0 top-0 h-full w-[280px] bg-surface border-r border-outline z-40 lg:hidden flex flex-col shadow-2xl"
+            className="fixed left-0 top-0 h-full w-[280px] bg-surface border-r border-outline z-[60] lg:hidden flex flex-col shadow-2xl"
           >
             <div className="flex items-center justify-between p-6">
               <div className="flex items-center gap-2">

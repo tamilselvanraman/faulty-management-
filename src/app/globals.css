@@ -84,8 +84,8 @@
 }
 
 @layer base {
-  body {
-    @apply bg-background text-on-surface font-sans antialiased;
+  html, body {
+    @apply bg-background text-on-surface font-sans antialiased overflow-x-hidden;
   }
 }
 

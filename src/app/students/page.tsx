@@ -221,18 +221,18 @@ export default function StudentsPage() {
               : 'Holistic management of student lifecycle and academic performance.'}
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
           <button onClick={() => downloadCSV('students_import_template.csv', CSV_TEMPLATES.students.headers, CSV_TEMPLATES.students.sample)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-[14px] font-bold transition-all shadow-sm">
-            <Download size={16} className="text-indigo-600" /> Format
+            className="flex justify-center items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-[13px] sm:text-[14px] font-bold transition-all shadow-sm">
+            <Download size={16} className="text-indigo-600 w-4 h-4" /> Format
           </button>
           <button onClick={() => setShowCSV(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-[14px] font-bold transition-all shadow-sm">
-            <Upload size={16} className="text-indigo-600" /> Import
+            className="flex justify-center items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-[13px] sm:text-[14px] font-bold transition-all shadow-sm">
+            <Upload size={16} className="text-indigo-600 w-4 h-4" /> Import
           </button>
           <button onClick={() => { setEditItem(null); setShowModal(true) }}
-            className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-slate-800 text-white rounded-xl text-[14px] font-bold transition-all shadow-lg shadow-slate-200">
-            <Plus size={18} /> Add Student
+            className="col-span-2 flex justify-center items-center gap-1.5 sm:gap-2 px-5 sm:px-6 py-2.5 bg-primary hover:bg-slate-800 text-white rounded-xl text-[13px] sm:text-[14px] font-bold transition-all shadow-lg shadow-slate-200">
+            <Plus size={18} className="w-[18px] h-[18px]" /> Add Student
           </button>
         </div>
       </motion.div>

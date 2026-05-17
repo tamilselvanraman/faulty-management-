@@ -33,7 +33,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-secondary/40 z-30 lg:hidden backdrop-blur-sm"
+              className="fixed inset-0 bg-secondary/40 z-50 lg:hidden backdrop-blur-sm"
               onClick={() => setMobileSidebarOpen(false)}
             />
           )}
@@ -48,7 +48,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         />
 
         {/* Main content */}
-        <div className="flex flex-col flex-1 min-w-0 transition-all duration-300 relative overflow-y-auto custom-scrollbar scroll-smooth">
+        <div className="flex flex-col flex-1 min-w-0 transition-all duration-300 relative overflow-y-auto overflow-x-hidden custom-scrollbar scroll-smooth">
           {/* Top Header */}
           <header className="h-20 bg-surface/60 backdrop-blur-xl border-b border-outline/50 flex items-center justify-between px-6 lg:px-10 relative z-30 transition-all duration-300 shrink-0">
             <div className="flex items-center gap-6">

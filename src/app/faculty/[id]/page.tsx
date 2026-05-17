@@ -174,31 +174,31 @@ export default function FacultyProfilePage() {
     <div className="min-h-screen bg-[#F8FAFC] pb-12">
       {/* 🚀 Premium Header */}
       <div className="sticky top-0 z-50 bg-white/70 backdrop-blur-2xl border-b border-slate-100/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
-          <div className="flex items-center gap-5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 md:py-0 md:h-24 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-4 md:gap-5 min-w-0">
             <button 
               onClick={() => router.back()}
-              className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 hover:scale-105 active:scale-95 transition-all duration-300"
+              className="w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-xl md:rounded-2xl flex items-center justify-center bg-slate-50 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 hover:scale-105 active:scale-95 transition-all duration-300"
             >
-              <ArrowLeft size={22} />
+              <ArrowLeft size={20} className="md:w-[22px] md:h-[22px]" />
             </button>
-            <div>
-              <div className="flex items-center gap-2 mb-0.5">
-                <span className="px-2 py-0.5 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider rounded-md">Faculty Profile</span>
-                <span className="text-slate-300">/</span>
-                <span className="text-slate-400 text-xs font-bold tracking-tight">{faculty.employee_id}</span>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 md:gap-2 mb-0.5 md:mb-1">
+                <span className="px-1.5 md:px-2 py-0.5 bg-indigo-600 text-white text-[9px] md:text-[10px] font-black uppercase tracking-wider rounded-md">Faculty Profile</span>
+                <span className="text-slate-300 hidden sm:inline">/</span>
+                <span className="text-slate-400 text-[10px] md:text-xs font-bold tracking-tight truncate">{faculty.employee_id}</span>
               </div>
-              <h1 className="text-2xl font-black text-slate-900 tracking-tight">{faculty.name}</h1>
+              <h1 className="text-lg md:text-2xl font-black text-slate-900 tracking-tight truncate">{faculty.name}</h1>
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 px-6 py-3.5 bg-white border border-slate-200 text-slate-700 rounded-2xl text-[14px] font-black hover:bg-slate-50 hover:shadow-lg transition-all active:scale-95">
-              <FileText size={18} className="text-indigo-600" />
+          <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto pb-1 md:pb-0 custom-scrollbar">
+            <button className="shrink-0 flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3.5 bg-white border border-slate-200 text-slate-700 rounded-xl sm:rounded-2xl text-[12px] sm:text-[14px] font-black hover:bg-slate-50 hover:shadow-lg transition-all active:scale-95">
+              <FileText size={16} className="text-indigo-600 sm:w-[18px] sm:h-[18px]" />
               Export Dossier
             </button>
-            <button className="flex items-center gap-2 px-8 py-3.5 bg-indigo-600 text-white rounded-2xl text-[14px] font-black shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all active:scale-95">
-              <Zap size={18} />
+            <button className="shrink-0 flex items-center gap-1.5 sm:gap-2 px-5 sm:px-8 py-2.5 sm:py-3.5 bg-indigo-600 text-white rounded-xl sm:rounded-2xl text-[12px] sm:text-[14px] font-black shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all active:scale-95">
+              <Zap size={16} className="sm:w-[18px] sm:h-[18px]" />
               Quick Actions
             </button>
           </div>

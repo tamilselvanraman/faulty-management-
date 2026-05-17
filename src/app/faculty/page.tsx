@@ -205,18 +205,18 @@ export default function FacultyPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3 w-full lg:w-auto mt-4 lg:mt-0">
           <button onClick={() => downloadCSV('faculty_import_template.csv', ['Name', 'Department', 'Designation', 'EmployeeID', 'Phone', 'Email', 'Subjects', 'Labs', 'Responsibilities'], [{ Name: 'Dr Kumar', Department: 'CSE', Designation: 'HOD', EmployeeID: 'CSE101', Phone: '9876543210', Email: 'kumar@college.edu', Subjects: 'DBMS|CN', Labs: 'DBMS Lab', Responsibilities: 'Placement Coordinator' }])}
-            className="flex items-center gap-2 px-5 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-2xl text-[14px] font-black transition-all hover:-translate-y-1 shadow-sm">
-            <Download size={18} className="text-indigo-600" /> Format
+            className="flex justify-center items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl sm:rounded-2xl text-[13px] sm:text-[14px] font-black transition-all hover:-translate-y-1 shadow-sm">
+            <Download size={16} className="text-indigo-600 sm:w-4 sm:h-4 w-[14px] h-[14px]" /> Format
           </button>
           <button onClick={() => setShowCSV(true)}
-            className="flex items-center gap-2 px-5 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-2xl text-[14px] font-black transition-all hover:-translate-y-1 shadow-sm">
-            <Upload size={18} className="text-indigo-600" /> Import
+            className="flex justify-center items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl sm:rounded-2xl text-[13px] sm:text-[14px] font-black transition-all hover:-translate-y-1 shadow-sm">
+            <Upload size={16} className="text-indigo-600 sm:w-4 sm:h-4 w-[14px] h-[14px]" /> Import
           </button>
           <button onClick={() => { setEditItem(null); setShowModal(true) }}
-            className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-[14px] font-black transition-all hover:-translate-y-1 shadow-lg shadow-indigo-200">
-            <Plus size={20} /> Add Faculty
+            className="col-span-2 flex justify-center items-center gap-1.5 sm:gap-2 px-5 sm:px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl sm:rounded-2xl text-[13px] sm:text-[14px] font-black transition-all hover:-translate-y-1 shadow-lg shadow-indigo-200">
+            <Plus size={18} className="sm:w-[20px] sm:h-[20px] w-[16px] h-[16px]" /> Add Faculty
           </button>
         </div>
       </motion.div>

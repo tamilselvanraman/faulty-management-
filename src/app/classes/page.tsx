@@ -137,7 +137,7 @@ export default function ClassesPage() {
               </div>
             </motion.div>
 
-            <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2} className="flex flex-wrap gap-4">
+            <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2} className="grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3 w-full lg:w-auto mt-4 lg:mt-0">
               <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -146,25 +146,25 @@ export default function ClassesPage() {
                 accept=".csv,.xlsx"
               />
               <button 
-                onClick={() => setIsAddModalOpen(true)}
-                className="flex items-center gap-2 px-6 py-4 bg-slate-900 text-white rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95"
-              >
-                <Plus size={18} />
-                Add New Class
-              </button>
-              <button 
                 onClick={handleFormatDownload}
-                className="flex items-center gap-2 px-6 py-4 bg-white border-2 border-slate-100 text-slate-600 rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
+                className="flex justify-center items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl sm:rounded-2xl text-[13px] sm:text-[14px] font-black transition-all hover:-translate-y-1 shadow-sm active:scale-95"
               >
-                <FileText size={18} />
+                <FileText size={16} className="text-primary sm:w-4 sm:h-4 w-[14px] h-[14px]" />
                 Format
               </button>
               <button 
                 onClick={handleImport}
-                className="flex items-center gap-2 px-6 py-4 bg-white border-2 border-slate-100 text-slate-600 rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
+                className="flex justify-center items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl sm:rounded-2xl text-[13px] sm:text-[14px] font-black transition-all hover:-translate-y-1 shadow-sm active:scale-95"
               >
-                <Upload size={18} />
+                <Upload size={16} className="text-primary sm:w-4 sm:h-4 w-[14px] h-[14px]" />
                 Import
+              </button>
+              <button 
+                onClick={() => setIsAddModalOpen(true)}
+                className="col-span-2 flex justify-center items-center gap-1.5 sm:gap-2 px-5 sm:px-6 py-2.5 bg-slate-900 text-white rounded-xl sm:rounded-2xl font-black text-[13px] sm:text-[14px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95"
+              >
+                <Plus size={18} className="sm:w-[20px] sm:h-[20px] w-[16px] h-[16px]" />
+                Add New Class
               </button>
             </motion.div>
           </div>

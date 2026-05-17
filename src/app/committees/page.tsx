@@ -238,7 +238,7 @@ export default function CommitteesPage() {
             Oversee academic and administrative committees and their governance.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto mt-4 sm:mt-0">
           <button 
             onClick={() => {
               const headers = ['name', 'type', 'category', 'description', 'chair_name', 'member_count', 'formed_date']
@@ -252,7 +252,7 @@ export default function CommitteesPage() {
               document.body.removeChild(link)
               toast.success('Template downloaded')
             }}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-all shadow-sm text-xs sm:text-sm"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-all shadow-sm text-xs sm:text-sm"
           >
             <Download size={18} />
             <span className="hidden sm:inline">Download Format</span>
@@ -260,7 +260,7 @@ export default function CommitteesPage() {
           </button>
           <button 
             onClick={() => setShowCSV(true)}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-all shadow-sm text-xs sm:text-sm"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-all shadow-sm text-xs sm:text-sm"
           >
             <Upload size={18} />
             <span className="hidden sm:inline">Bulk Import</span>
@@ -268,7 +268,7 @@ export default function CommitteesPage() {
           </button>
           <button 
             onClick={() => { setEditItem(null); setShowModal(true) }}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#4f46e5] text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 active:scale-95 transition-all text-sm sm:text-base"
+            className="col-span-2 sm:col-span-1 w-full sm:w-auto flex items-center justify-center gap-2 bg-[#4f46e5] text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 active:scale-95 transition-all text-sm sm:text-base"
           >
             <Plus size={18} />
             <span>New Committee</span>

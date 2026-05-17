@@ -20,8 +20,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased bg-background text-on-background`}>
+    <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
+      <body className={`${inter.variable} font-sans antialiased bg-background text-on-background overflow-x-hidden`}>
         <ClientLayoutShell>
           {children}
         </ClientLayoutShell>
