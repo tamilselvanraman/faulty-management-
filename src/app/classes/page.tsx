@@ -4,11 +4,13 @@ import {
   Plus, Search, SlidersHorizontal, MapPin, 
   MoreHorizontal, Eye, Edit2, Archive, Trash2,
   Download, FileDown, FileText, Upload,
-  ChevronRight, Building2, X
+  ChevronRight, Building2, X, GraduationCap,
+  CircleDot
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { useState, useMemo, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 
 // --- Types ---
 interface ClassData {
@@ -52,9 +54,11 @@ const DropdownItem = ({ icon: Icon, label, onClick, danger = false }: any) => (
 
 // --- Page Component ---
 export default function ClassesPage() {
+  const router = useRouter()
   const [search, setSearch] = useState('')
   const [buildingFilter, setBuildingFilter] = useState('All')
   const [deptFilter, setDeptFilter] = useState('All')
+  const [yearFilter, setYearFilter] = useState('All')
   const [activeRowId, setActiveRowId] = useState<string | null>(null)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -92,7 +96,11 @@ export default function ClassesPage() {
   }
 
   const handleAction = (type: string, id: string) => {
-    toast.success(`${type} action triggered for ${id}`)
+    if (type === 'View') {
+      router.push(`/classes/${id}`)
+    } else {
+      toast.success(`${type} action triggered for ${id}`)
+    }
     setActiveRowId(null)
   }
 
@@ -106,16 +114,17 @@ export default function ClassesPage() {
       
       const matchesBuilding = buildingFilter === 'All' || c.type_building === buildingFilter
       const matchesDept = deptFilter === 'All' || c.department === deptFilter
-      return matchesSearch && matchesBuilding && matchesDept
+      const matchesYear = yearFilter === 'All' || c.academic_year === yearFilter
+      return matchesSearch && matchesBuilding && matchesDept && matchesYear
     })
-  }, [search, buildingFilter, deptFilter])
+  }, [search, buildingFilter, deptFilter, yearFilter])
 
   const fadeUp = {
     hidden: { opacity: 0, y: 20 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: { delay: i * 0.1, duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }
+      transition: { delay: i * 0.1, duration: 0.5, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }
     })
   }
 
@@ -186,32 +195,47 @@ export default function ClassesPage() {
               />
             </div>
             
-            <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
-              <div className="w-full sm:w-[200px] relative">
-                <MapPin size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                <select 
-                  value={buildingFilter} 
-                  onChange={e => setBuildingFilter(e.target.value)}
-                  className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-100 rounded-xl text-[13px] font-bold text-slate-600 outline-none hover:bg-slate-100 transition-all appearance-none cursor-pointer"
-                >
-                  <option value="All">All Buildings</option>
-                  {BUILDINGS.filter(b => b !== 'All').map(b => (
-                    <option key={b} value={b}>{b}</option>
-                  ))}
-                </select>
-                <ChevronRight size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none" />
-              </div>
-
-              <div className="w-full sm:w-[200px] relative">
+            <div className="flex flex-col md:flex-row items-center gap-3 w-full lg:w-auto">
+              <div className="w-full md:w-[160px] relative">
                 <Building2 size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 <select 
                   value={deptFilter} 
                   onChange={e => setDeptFilter(e.target.value)}
                   className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-100 rounded-xl text-[13px] font-bold text-slate-600 outline-none hover:bg-slate-100 transition-all appearance-none cursor-pointer"
                 >
-                  <option value="All">All Departments</option>
+                  <option value="All">All Depts</option>
                   {DEPARTMENTS.filter(d => d !== 'All').map(d => (
                     <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+                <ChevronRight size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none" />
+              </div>
+
+              <div className="w-full md:w-[160px] relative">
+                <GraduationCap size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <select 
+                  value={yearFilter} 
+                  onChange={e => setYearFilter(e.target.value)}
+                  className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-100 rounded-xl text-[13px] font-bold text-slate-600 outline-none hover:bg-slate-100 transition-all appearance-none cursor-pointer"
+                >
+                  <option value="All">All Years</option>
+                  {YEARS.map(y => (
+                    <option key={y} value={y}>{y} Year</option>
+                  ))}
+                </select>
+                <ChevronRight size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none" />
+              </div>
+
+              <div className="w-full md:w-[160px] relative">
+                <MapPin size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <select 
+                  value={buildingFilter} 
+                  onChange={e => setBuildingFilter(e.target.value)}
+                  className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-100 rounded-xl text-[13px] font-bold text-slate-600 outline-none hover:bg-slate-100 transition-all appearance-none cursor-pointer"
+                >
+                  <option value="All">All Blocks</option>
+                  {BUILDINGS.filter(b => b !== 'All').map(b => (
+                    <option key={b} value={b}>{b}</option>
                   ))}
                 </select>
                 <ChevronRight size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none" />
@@ -229,37 +253,43 @@ export default function ClassesPage() {
             <table className="w-full min-w-[1100px] border-collapse text-left">
               <thead className="sticky top-0 z-30">
                 <tr className="border-b border-slate-200 bg-slate-50/95 backdrop-blur-md">
-                  <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest">Hall / Class</th>
-                  <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest">Department</th>
-                  <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest">Building</th>
-                  <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest">Occupancy</th>
-                  <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest">Faculty Advisor</th>
-                  <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                  <th className="px-6 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Class Name</th>
+                  <th className="px-6 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Department</th>
+                  <th className="px-6 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Hall / Floor</th>
+                  <th className="px-6 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Strength</th>
+                  <th className="px-6 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Class Advisor</th>
+                  <th className="px-6 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filtered.map((c) => (
                   <tr key={c.id} className="hover:bg-slate-50/50 transition-colors group">
-                    <td className="px-8 py-6">
+                    <td className="px-6 py-5">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-primary font-black text-sm border border-slate-200/50">
-                          {c.hall_number}
+                        <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary font-black text-sm border border-primary/10">
+                          {c.department}-{c.section}
                         </div>
                         <div>
-                          <p className="text-[14px] font-bold text-slate-900">{c.department} — {c.section}</p>
-                          <p className="text-[11px] font-bold text-slate-400 mt-0.5">{c.id}</p>
+                          <p className="text-[14px] font-bold text-slate-900">{c.department} - {c.section}</p>
+                          <p className="text-[11px] font-bold text-slate-400 mt-0.5">Year {c.academic_year}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6 text-[14px] font-bold text-slate-700">{c.department} (Year {c.academic_year})</td>
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-2 text-slate-500 font-bold text-[13px]">
-                        <MapPin size={14} />
-                        {c.type_building}
+                    <td className="px-6 py-5">
+                      <p className="text-[14px] font-bold text-slate-700">{c.department}</p>
+                      <p className="text-[11px] font-bold text-slate-400 mt-0.5">Year {c.academic_year}</p>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[13px] font-bold text-slate-700">{c.hall_number}</span>
+                        <div className="flex items-center gap-1 text-[11px] font-bold text-slate-400">
+                          <MapPin size={12} />
+                          {c.type_building}
+                        </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <div className="w-32">
+                    <td className="px-6 py-5">
+                      <div className="w-28">
                         <div className="flex items-center justify-between mb-1.5">
                           <span className="text-[11px] font-bold text-slate-600">{c.strength} / {c.capacity}</span>
                           <span className="text-[10px] font-bold text-slate-400">{Math.round((c.strength/c.capacity)*100)}%</span>
@@ -269,15 +299,15 @@ export default function ClassesPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary font-black text-[10px]">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 font-black text-[10px]">
                           {c.advisor_name.split(' ').map(n => n[0]).join('')}
                         </div>
                         <span className="text-[13px] font-bold text-slate-700">{c.advisor_name}</span>
                       </div>
                     </td>
-                    <td className="px-8 py-6 text-right relative">
+                    <td className="px-6 py-5 text-right relative">
                       <button 
                         onClick={() => setActiveRowId(activeRowId === c.id ? null : c.id)}
                         className={`p-2 rounded-lg transition-all ${activeRowId === c.id ? 'bg-primary text-white shadow-lg' : 'hover:bg-slate-100 text-slate-400'}`}
