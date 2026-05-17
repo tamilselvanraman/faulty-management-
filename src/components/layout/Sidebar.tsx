@@ -109,9 +109,8 @@ interface SidebarContentProps {
 
 function SidebarContent({ collapsed, isActive, isMobile, onToggleCollapse, onMobileClose }: SidebarContentProps) {
   const router = useRouter()
-  const supabase = createClient()
-
   const handleLogout = async () => {
+    const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/login')
   }
