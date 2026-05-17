@@ -1,248 +1,220 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, Lock, Eye, EyeOff, Building2, Loader2, ShieldCheck } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Building2,
+  Loader2,
+  AlertCircle,
+  GraduationCap,
+  Calendar,
+  BarChart3,
+  Bell,
+  ShieldCheck
+} from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    const supabase = createClient()
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
-    if (authError) {
-      setError(authError.message)
-      setLoading(false)
-    } else {
-      router.push('/')
-      router.refresh()
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    const supabase = createClient();
+
+    try {
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (authError) {
+        setError(authError.message);
+        setLoading(false);
+      } else {
+        router.push("/");
+        router.refresh();
+      }
+    } catch (err: any) {
+      setError(err?.message || "An unexpected error occurred.");
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'linear-gradient(135deg, #EEF2FF 0%, #FFFFFF 50%, #EFF6FF 100%)',
-        padding: '16px',
-        overflowY: 'auto',
-      }}
-    >
-      {/* Decorative blobs — kept behind everything */}
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
-        <div style={{
-          position: 'absolute', top: '-10%', right: '-5%',
-          width: '40vw', height: '40vw', maxWidth: 360, maxHeight: 360,
-          background: 'radial-gradient(circle, rgba(199,210,254,0.7) 0%, transparent 70%)',
-          borderRadius: '50%',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: '-10%', left: '-5%',
-          width: '40vw', height: '40vw', maxWidth: 360, maxHeight: 360,
-          background: 'radial-gradient(circle, rgba(191,219,254,0.7) 0%, transparent 70%)',
-          borderRadius: '50%',
-        }} />
-      </div>
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#F8FAFC] p-4 sm:p-6 md:p-10 relative overflow-y-auto font-sans antialiased">
+      {/* Background ambient decorative shapes */}
+      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-100/30 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-blue-100/25 blur-[120px] pointer-events-none" />
+      
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
 
-      {/* Left panel — visible only on lg screens */}
-      <div className="hidden lg:flex flex-col justify-between h-full max-h-[580px] w-[420px] mr-16 relative z-10">
-        <div>
-          <div className="flex items-center gap-3 mb-12">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center">
+      {/* Unified Container Card ("Big Box") */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full max-w-[1024px] bg-white rounded-3xl border border-slate-100 shadow-[0_32px_80px_-20px_rgba(79,70,229,0.08)] grid grid-cols-1 md:grid-cols-12 overflow-hidden relative z-10 min-h-[580px]"
+      >
+        {/* Left Side Pane - Branding & Features (Premium Deep Corporate Slate/Indigo Gradient) */}
+        <div className="md:col-span-6 lg:col-span-7 bg-gradient-to-br from-[#0B0F19] via-[#111827] to-[#0F172A] p-6 sm:p-10 md:p-16 flex flex-col justify-between border-b md:border-b-0 md:border-r border-slate-800/20 relative overflow-hidden">
+          {/* Subtle light leak gradient overlay */}
+          <div className="absolute top-[-20%] right-[-20%] w-[300px] h-[300px] rounded-full bg-indigo-500/10 blur-[80px] pointer-events-none" />
+          
+          {/* Logo */}
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
               <Building2 size={20} className="text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">EduManage ERP</span>
-          </div>
-          <h2 className="text-4xl font-black text-gray-900 leading-tight tracking-tight">
-            Manage your<br />
-            <span className="text-indigo-600">college smarter.</span>
-          </h2>
-          <p className="text-gray-500 mt-4 text-base leading-relaxed max-w-xs">
-            All-in-one platform for faculty, students, timetables, events, and administration.
-          </p>
-        </div>
-
-        <div className="space-y-3 mt-8">
-          {[
-            { icon: '👨‍🏫', label: 'Faculty & Student Management' },
-            { icon: '📅', label: 'Smart Timetable Scheduling' },
-            { icon: '📊', label: 'Real-time Analytics Dashboard' },
-            { icon: '🔔', label: 'Events, Tasks & Notifications' },
-          ].map((f) => (
-            <div key={f.label} className="flex items-center gap-3">
-              <span className="text-xl">{f.icon}</span>
-              <span className="text-sm font-medium text-gray-600">{f.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Login Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: 440 }}
-      >
-        <div style={{
-          background: '#ffffff',
-          border: '1px solid #E5E7EB',
-          borderRadius: 24,
-          padding: '2.5rem',
-          boxShadow: '0 24px 64px -12px rgba(79,70,229,0.12), 0 8px 24px -4px rgba(0,0,0,0.08)',
-          width: '100%',
-        }}>
-
-          {/* Mobile logo (hidden on lg) */}
-          <div className="flex flex-col items-center mb-8 lg:hidden">
-            <div style={{
-              width: 56, height: 56, borderRadius: 16,
-              background: '#4F46E5', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              marginBottom: 16, boxShadow: '0 8px 24px rgba(79,70,229,0.35)',
-            }}>
-              <Building2 size={26} color="#fff" />
-            </div>
-            <h1 style={{ fontSize: 24, fontWeight: 800, color: '#111827', letterSpacing: '-0.02em', margin: 0 }}>
+            <span className="text-lg font-bold tracking-tight text-white">
               EduManage ERP
-            </h1>
-            <p style={{ fontSize: 14, color: '#9CA3AF', marginTop: 6 }}>College Administration Portal</p>
+            </span>
           </div>
 
-          {/* Desktop card header */}
-          <div className="hidden lg:block mb-8">
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111827', letterSpacing: '-0.02em', margin: 0 }}>
+          {/* Marketing Content */}
+          <div className="my-auto py-10 md:py-0 relative z-10">
+            <h1 className="text-3xl sm:text-4xl md:text-[40px] font-extrabold leading-[1.2] tracking-tight text-white">
+              Manage your <br />
+              <span className="bg-gradient-to-r from-indigo-400 to-blue-400 bg-clip-text text-transparent">college smarter.</span>
+            </h1>
+            
+            <p className="hidden sm:block mt-4 text-slate-400 font-medium text-sm md:text-[15px] max-w-[420px] leading-relaxed">
+              All-in-one platform for faculty, students, timetables, events, and administration.
+            </p>
+
+            {/* Checklist with clean Lucide icons instead of emojis */}
+            <ul className="hidden md:block mt-8 space-y-4">
+              {[
+                { icon: GraduationCap, iconColor: "text-indigo-400", bgAccent: "bg-indigo-950/50 border border-indigo-900/40", text: "Faculty & Student Management" },
+                { icon: Calendar, iconColor: "text-blue-400", bgAccent: "bg-blue-950/50 border border-blue-900/40", text: "Smart Timetable Scheduling" },
+                { icon: BarChart3, iconColor: "text-emerald-400", bgAccent: "bg-emerald-950/50 border border-emerald-900/40", text: "Real-time Analytics Dashboard" },
+                { icon: Bell, iconColor: "text-rose-400", bgAccent: "bg-rose-950/50 border border-rose-900/40", text: "Events, Tasks & Notifications" }
+              ].map((item, idx) => (
+                <li
+                  key={idx}
+                  className="flex items-center gap-4 text-slate-300 font-semibold text-sm md:text-[15px] hover:translate-x-1 transition-transform duration-200"
+                >
+                  <div className={`w-9 h-9 rounded-lg ${item.bgAccent} flex items-center justify-center flex-shrink-0`}>
+                    <item.icon size={18} className={item.iconColor} />
+                  </div>
+                  <span>{item.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Right Side Pane - Login Form */}
+        <div className="md:col-span-6 lg:col-span-5 p-6 sm:p-10 md:p-16 flex flex-col justify-center bg-white">
+          <div className="space-y-1.5 mb-8">
+            <h2 className="text-3xl font-black text-slate-900 tracking-tight">
               Welcome back
             </h2>
-            <p style={{ fontSize: 14, color: '#9CA3AF', marginTop: 6 }}>Sign in to your admin dashboard</p>
+            <p className="text-sm text-slate-400 font-medium">
+              Sign in to your admin dashboard
+            </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-
-            {/* Email */}
-            <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+          <form onSubmit={handleLogin} className="space-y-6">
+            {/* Email Field */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-700 tracking-wide block">
                 Email address
               </label>
-              <div style={{ position: 'relative' }}>
-                <Mail size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF' }} />
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                  <Mail size={18} />
+                </div>
                 <input
                   type="email"
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="admin@college.edu"
-                  style={{
-                    width: '100%', paddingLeft: 40, paddingRight: 16, paddingTop: 12, paddingBottom: 12,
-                    background: '#F9FAFB', border: '1.5px solid #E5E7EB', borderRadius: 12,
-                    fontSize: 14, color: '#111827', outline: 'none', boxSizing: 'border-box',
-                    transition: 'border-color 0.15s, box-shadow 0.15s',
-                  }}
-                  onFocus={e => { e.target.style.borderColor = '#6366F1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)' }}
-                  onBlur={e => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none' }}
+                  className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-[14px] text-slate-800 placeholder:text-slate-400 outline-none transition-all duration-300 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100"
                 />
               </div>
             </div>
 
-            {/* Password */}
-            <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+            {/* Password Field */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-700 tracking-wide block">
                 Password
               </label>
-              <div style={{ position: 'relative' }}>
-                <Lock size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF' }} />
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                  <Lock size={18} />
+                </div>
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="••••••••"
-                  style={{
-                    width: '100%', paddingLeft: 40, paddingRight: 48, paddingTop: 12, paddingBottom: 12,
-                    background: '#F9FAFB', border: '1.5px solid #E5E7EB', borderRadius: 12,
-                    fontSize: 14, color: '#111827', outline: 'none', boxSizing: 'border-box',
-                    transition: 'border-color 0.15s, box-shadow 0.15s',
-                  }}
-                  onFocus={e => { e.target.style.borderColor = '#6366F1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)' }}
-                  onBlur={e => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none' }}
+                  className="w-full pl-11 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-[14px] text-slate-800 placeholder:text-slate-400 outline-none transition-all duration-300 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
-            {/* Error */}
-            <AnimatePresence>
+            {/* Error Message */}
+            <AnimatePresence mode="wait">
               {error && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#DC2626' }}
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="bg-rose-50 border border-rose-100 text-rose-600 text-xs px-4 py-3 rounded-2xl flex items-start gap-2.5 shadow-sm"
                 >
-                  {error}
+                  <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
+                  <p className="leading-relaxed font-semibold">{error}</p>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Submit */}
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              style={{
-                width: '100%', padding: '13px 0',
-                background: loading ? '#818CF8' : '#4F46E5',
-                color: '#ffffff', fontWeight: 700, fontSize: 14,
-                border: 'none', borderRadius: 12, cursor: loading ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                boxShadow: '0 4px 16px rgba(79,70,229,0.35)',
-                transition: 'background 0.15s, transform 0.1s',
-                marginTop: 8,
-              }}
+              className="w-full py-4 px-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] disabled:scale-100 disabled:opacity-80 text-white font-extrabold text-xs uppercase tracking-widest rounded-2xl shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed mt-2"
             >
               {loading ? (
                 <>
-                  <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
-                  Signing in...
+                  <Loader2 size={16} className="animate-spin text-white" />
+                  <span>Signing In...</span>
                 </>
               ) : (
-                'Sign In to Dashboard'
+                <span>SIGN IN TO DASHBOARD</span>
               )}
             </button>
           </form>
 
-          {/* Footer note */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 20 }}>
-            <ShieldCheck size={13} style={{ color: '#9CA3AF' }} />
-            <p style={{ fontSize: 12, color: '#9CA3AF', margin: 0 }}>
-              Authorized administrators only
-            </p>
+          {/* Secure disclaimer */}
+          <div className="flex items-center justify-center gap-2 mt-8 text-slate-400 select-none">
+            <ShieldCheck size={14} className="text-slate-400" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">
+              AUTHORIZED ADMINISTRATORS ONLY
+            </span>
           </div>
         </div>
       </motion.div>
-
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
     </div>
-  )
+  );
 }
