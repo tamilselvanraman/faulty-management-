@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, CheckCircle2, Clock, AlertCircle, Circle, X, Edit2, Trash2, Flag, ChevronDown, Filter, User, Calendar, AlertTriangle, Upload, Download, Search, ArrowUpRight } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -46,7 +46,8 @@ const STATUS_LABELS = ['all', 'pending', 'in_progress', 'completed', 'cancelled'
 const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] as any } }) }
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>(MOCK_TASKS)
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [loading, setLoading] = useState(true)
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterPriority, setFilterPriority] = useState('all')
   const [showModal, setShowModal] = useState(false)
@@ -54,6 +55,24 @@ export default function TasksPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [showCSV, setShowCSV] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+
+  const fetchTasks = useCallback(async () => {
+    try {
+      setLoading(true)
+      const res = await fetch('/api/tasks')
+      const { data } = await res.json()
+      if (data) setTasks(data)
+      else setTasks(MOCK_TASKS)
+    } catch {
+      setTasks(MOCK_TASKS)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchTasks()
+  }, [fetchTasks])
 
   const filtered = tasks.filter(t => {
     const matchStatus = filterStatus === 'all' || t.status === filterStatus
@@ -64,34 +83,86 @@ export default function TasksPage() {
     return matchStatus && matchPriority && matchSearch
   })
 
-  const handleStatusChange = (id: string, newStatus: Task['status']) => {
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t))
-    toast.success(`Task marked as ${newStatus.replace('_', ' ')}`)
-  }
-
-  const handleSave = (data: Partial<Task>) => {
-    if (editItem) {
-      setTasks(prev => prev.map(t => t.id === editItem.id ? { ...t, ...data } : t))
-      toast.success('Task updated successfully')
-    } else {
-      setTasks(prev => [{ ...data, id: Date.now().toString(), status: 'pending', created_at: new Date().toISOString().split('T')[0] } as Task, ...prev])
-      toast.success('Task created successfully')
+  const handleStatusChange = async (id: string, newStatus: Task['status']) => {
+    try {
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      })
+      if (!res.ok) throw new Error()
+      setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t))
+      toast.success(`Task marked as ${newStatus.replace('_', ' ')}`)
+    } catch {
+      toast.error('Failed to update status in database')
     }
-    setShowModal(false)
-    setEditItem(null)
   }
 
-  const handleBulkUpload = (data: any[]) => {
+  const handleSave = async (data: Partial<Task>) => {
+    try {
+      const isEdit = !!editItem
+      const method = isEdit ? 'PUT' : 'POST'
+      const url = isEdit ? `/api/tasks/${editItem.id}` : '/api/tasks'
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) throw new Error()
+      const { data: savedData } = await res.json()
+      
+      if (isEdit) {
+        setTasks(prev => prev.map(t => t.id === editItem.id ? { ...t, ...savedData } : t))
+        toast.success('Task updated successfully')
+      } else {
+        setTasks(prev => [savedData, ...prev])
+        toast.success('Task created successfully')
+      }
+    } catch {
+      toast.error('Failed to save task')
+    } finally {
+      setShowModal(false)
+      setEditItem(null)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error()
+      setTasks(prev => prev.filter(t => t.id !== id))
+      toast.success('Task permanently deleted')
+    } catch {
+      toast.error('Failed to delete task')
+    } finally {
+      setDeleteId(null)
+    }
+  }
+
+  const handleBulkUpload = async (data: any[]) => {
     const newTasks = data.map(item => ({
-      ...item,
-      id: Math.random().toString(36).substr(2, 9),
+      title: item.title || 'Untitled Task',
+      description: item.description || '',
       status: item.status || 'pending',
       priority: item.priority || 'medium',
-      created_at: new Date().toISOString().split('T')[0]
+      due_date: item.due_date || new Date().toISOString().split('T')[0],
+      category: item.category || 'General',
     }))
-    setTasks(prev => [...newTasks, ...prev])
-    setShowCSV(false)
-    toast.success(`${newTasks.length} tasks imported successfully`)
+
+    try {
+      const res = await fetch('/api/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity: 'tasks', rows: newTasks })
+      })
+      if (!res.ok) throw new Error()
+      fetchTasks()
+      toast.success(`${newTasks.length} tasks imported successfully`)
+    } catch {
+      toast.error('Failed to import tasks')
+    } finally {
+      setShowCSV(false)
+    }
   }
 
   const counts = {
@@ -315,7 +386,7 @@ export default function TasksPage() {
               <p className="text-sm font-medium text-on-surface-variant/60 leading-relaxed mb-8">This action cannot be undone. Are you sure you want to remove this task?</p>
               <div className="flex gap-3">
                 <button onClick={() => setDeleteId(null)} className="flex-1 py-3 border border-outline rounded-2xl text-[13px] font-black uppercase tracking-widest text-on-surface-variant hover:bg-surface-variant transition-all">Cancel</button>
-                <button onClick={() => { setTasks(prev => prev.filter(t => t.id !== deleteId)); setDeleteId(null); toast.success('Task permanently deleted') }}
+                <button onClick={() => handleDelete(deleteId)}
                   className="flex-1 py-3 bg-tertiary text-white rounded-2xl text-[13px] font-black uppercase tracking-widest shadow-lg shadow-tertiary/20 hover:bg-tertiary/90 transition-all">Delete</button>
               </div>
             </motion.div>

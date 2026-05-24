@@ -165,27 +165,37 @@ export default function FacultyPage() {
     toast.success('Faculty member removed')
   }
 
-  const handleBulkUpload = (data: any[]) => {
+  const handleBulkUpload = async (data: any[]) => {
     const newFaculty = data.map((row, idx) => ({
-      id: `bulk-${Date.now()}-${idx}`,
       employee_id: row.employee_id || row.EmployeeID || `FAC${idx + 100}`,
       name: row.name || row.Name || 'Unknown',
-      email: row.email || row.Email || '',
+      email: row.email || row.Email || `fac-${Date.now()}-${idx}@college.edu`,
       phone: row.phone || row.Phone || '',
       department: row.department || row.Department || 'CSE',
-      designation: row.designation || row.Designation || 'Lecturer',
-      qualification: row.qualification || '',
+      designation: row.designation || row.Designation || 'Assistant Professor',
+      qualification: row.qualification || 'M.Tech',
       status: 'active',
       joining_date: row.joining_date || row['Joining Date'] || new Date().toISOString().split('T')[0],
       subjects: (row.subjects || row.Subjects || '').split('|').filter(Boolean),
       labs: (row.labs || row.Labs || '').split('|').filter(Boolean),
       dept_responsibility: row.dept_responsibility || row.Responsibilities || '',
       shift: row.shift || 'Day',
-    })) as Faculty[]
+    }))
     
-    setFaculty(prev => [...newFaculty, ...prev])
-    setShowCSV(false)
-    toast.success(`Successfully imported ${newFaculty.length} faculty members`)
+    try {
+      const res = await fetch('/api/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity: 'faculty', rows: newFaculty })
+      })
+      if (!res.ok) throw new Error()
+      fetchFaculty()
+      toast.success(`Successfully imported ${newFaculty.length} faculty members`)
+    } catch {
+      toast.error('Failed to import faculty members')
+    } finally {
+      setShowCSV(false)
+    }
   }
 
   return (

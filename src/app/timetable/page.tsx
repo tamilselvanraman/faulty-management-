@@ -74,6 +74,10 @@ function TimetableContent() {
   const [currentDay, setCurrentDay] = useState<string | null>(null)
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
 
+  const [timetableSlots, setTimetableSlots] = useState<any[]>([])
+  const [classes, setClasses] = useState<any[]>([])
+  const [loadingSlots, setLoadingSlots] = useState(false)
+
   useEffect(() => {
     const parseTimeToMinutes = (timeStr: string) => {
       const [timePart, ampm] = timeStr.trim().split(' ')
@@ -123,6 +127,29 @@ function TimetableContent() {
     if (deptParam) setSelectedDept(deptParam)
   }, [deptParam])
 
+  useEffect(() => {
+    if (!selectedDept) return
+    const loadTimetableData = async () => {
+      try {
+        setLoadingSlots(true)
+        const classRes = await fetch(`/api/classes?department=${selectedDept}`)
+        const { data: classData } = await classRes.json()
+        if (classData && classData.length > 0) {
+          setClasses(classData)
+          const firstClass = classData[0]
+          const slotRes = await fetch(`/api/timetable?class_id=${firstClass.id}`)
+          const { data: slotData } = await slotRes.json()
+          if (slotData) setTimetableSlots(slotData)
+        }
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoadingSlots(false)
+      }
+    }
+    loadTimetableData()
+  }, [selectedDept])
+
   const filteredDepts = useMemo(() => {
     return DEPARTMENTS.filter(d => {
       const matchesSearch = d.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -140,22 +167,48 @@ function TimetableContent() {
     // Skip if it's a break slot
     if (slot.label.toLowerCase().includes('break')) return null
     
-    // Deterministic mock data
-    const hash = (dept.length + day.length + slotIdx) % 5
-    if (hash > 2) return null
+    // Period number maps from slot index (skipping break indices if necessary, but simple period number works)
+    let periodNumber = 0
+    for (let i = 0; i <= slotIdx; i++) {
+      if (!TIME_SLOTS[i].label.toLowerCase().includes('break')) {
+        periodNumber++
+      }
+    }
     
-    const subjects = ['Core Engineering', 'Advanced Systems', 'Design Patterns', 'Data Analytics', 'Ethics & Tech']
-    const advisors = ['Dr. Sarah Jenkins', 'Prof. Michael Chen', 'Dr. Elena Rodriguez', 'Prof. David Wilson', 'Dr. James Smith']
+    // Find matches in timetableSlots
+    const matchingSlot = timetableSlots.find(s => 
+      s.day_of_week === day && 
+      s.period_number === periodNumber
+    )
     
-    return {
-      id: `CLS-${dept}-${day}-${slotIdx}`,
-      department: dept,
-      academic_year: `${(hash % 4) + 1}st Year`,
-      section: String.fromCharCode(65 + (hash % 3)), // A, B, C
-      advisor_name: advisors[hash % advisors.length],
-      subject: `${dept} - ${subjects[hash % subjects.length]}`,
+    if (!matchingSlot) {
+      // Deterministic mock data fallback
+      const hash = (dept.length + day.length + slotIdx) % 5
+      if (hash > 2) return null
+      
+      const subjects = ['Core Engineering', 'Advanced Systems', 'Design Patterns', 'Data Analytics', 'Ethics & Tech']
+      const advisors = ['Dr. Sarah Jenkins', 'Prof. Michael Chen', 'Dr. Elena Rodriguez', 'Prof. David Wilson', 'Dr. James Smith']
+      
+      return {
+        id: `CLS-${dept}-${day}-${slotIdx}`,
+        department: dept,
+        academic_year: `${(hash % 4) + 1}st Year`,
+        section: String.fromCharCode(65 + (hash % 3)), // A, B, C
+        advisor_name: advisors[hash % advisors.length],
+        subject: `${dept} - ${subjects[hash % subjects.length]}`,
+      }
     }
 
+    // Return live data
+    const relatedClass = classes.find(c => c.id === matchingSlot.class_id)
+    return {
+      id: matchingSlot.id,
+      department: dept,
+      academic_year: relatedClass ? `${relatedClass.academic_year} Year` : 'I Year',
+      section: relatedClass ? relatedClass.section : 'A',
+      advisor_name: matchingSlot.faculty?.name || 'Unassigned',
+      subject: matchingSlot.subject,
+    }
   }
 
   const displayedDays = DAYS

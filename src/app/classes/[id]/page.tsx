@@ -1,6 +1,6 @@
 'use client'
 
-import { use } from 'react'
+import { use, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
@@ -70,7 +70,56 @@ const fadeUp = {
 export default function ClassDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
-  const classData = getClassDetails(id)
+  const [classData, setClassData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        const res = await fetch(`/api/classes/${id}`)
+        const { data } = await res.json()
+        if (data) {
+          const mock = getClassDetails(id)
+          setClassData({
+            ...mock,
+            id: data.id,
+            name: `${data.department}-${data.section}`,
+            department: data.department,
+            academic_year: data.academic_year,
+            section: data.section,
+            hall_number: data.hall_number,
+            block: data.type_building,
+            faculty: data.advisor ? {
+              name: data.advisor.name,
+              contact: data.advisor.phone || '+91 98765 43210',
+              email: data.advisor.email || 'advisor@college.edu',
+              department: data.advisor.department || data.department,
+              role: `${data.advisor.designation} & Advisor`
+            } : mock.faculty,
+          })
+        } else {
+          setClassData(getClassDetails(id))
+        }
+      } catch {
+        setClassData(getClassDetails(id))
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchDetails()
+  }, [id])
+
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+    </div>
+  )
+
+  if (!classData) return (
+    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+      <p className="text-slate-500 font-bold">Class not found</p>
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-20">
@@ -151,7 +200,7 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
                 <div>
                   <h3 className="text-[12px] font-bold text-slate-500 uppercase tracking-widest mb-4 bg-slate-50 inline-block px-3 py-1 rounded-lg">Theory Subjects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {classData.subjects.theory.map((sub, idx) => (
+                    {classData.subjects.theory.map((sub: any, idx: number) => (
                       <div key={idx} className="flex items-start gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
                         <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-primary font-black text-[11px]">
                           {sub.code.substring(2)}
@@ -170,7 +219,7 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
                 <div>
                   <h3 className="text-[12px] font-bold text-slate-500 uppercase tracking-widest mb-4 bg-slate-50 inline-block px-3 py-1 rounded-lg">Laboratory</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {classData.subjects.lab.map((sub, idx) => (
+                    {classData.subjects.lab.map((sub: any, idx: number) => (
                       <div key={idx} className="flex items-start gap-4 p-4 rounded-2xl border border-slate-100 bg-indigo-50/30">
                         <div className="w-10 h-10 rounded-xl bg-white border border-indigo-100 flex items-center justify-center text-indigo-600 font-black text-[11px]">
                           {sub.code.substring(2)}
@@ -200,13 +249,13 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
               </div>
               <div className="overflow-x-auto custom-scrollbar pb-2">
                 <div className="flex flex-col gap-3 min-w-[600px]">
-                  {classData.timetable.map((day, idx) => (
+                  {classData.timetable.map((day: any, idx: number) => (
                     <div key={idx} className="flex items-center gap-4">
                       <div className="w-14 text-center">
                         <p className="text-[12px] font-black text-slate-400 uppercase tracking-widest">{day.day}</p>
                       </div>
                       <div className="flex-1 flex items-center gap-2">
-                        {day.periods.map((period, pIdx) => (
+                        {day.periods.map((period: any, pIdx: number) => (
                           <div 
                             key={pIdx} 
                             className={`flex-1 py-3 text-center rounded-xl text-[12px] font-bold border
@@ -234,7 +283,7 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
               </h2>
               <div className="flex items-center gap-4 mb-6 relative z-10">
                 <div className="w-16 h-16 rounded-2xl bg-slate-100 border-2 border-white shadow-md flex items-center justify-center text-xl font-black text-slate-400">
-                  {classData.faculty.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                  {classData.faculty.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2)}
                 </div>
                 <div>
                   <p className="text-[16px] font-black text-slate-800">{classData.faculty.name}</p>
@@ -291,7 +340,7 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
                 <Award className="text-amber-500" size={18} /> Top Performers
               </h2>
               <div className="space-y-4">
-                {classData.students.top_performers.map((student, idx) => (
+                {classData.students.top_performers.map((student: any, idx: number) => (
                   <div key={idx} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-black

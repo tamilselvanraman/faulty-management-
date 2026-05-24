@@ -9,11 +9,9 @@ export const facultySchema = z.object({
   email: z.string().email('Invalid email address'),
   photo_url: z.string().url().optional().or(z.literal('')),
   shift: z.enum(['Day', 'Eve', 'Noon']).default('Day'),
-  subject_1: z.string().optional().or(z.literal('')),
-  subject_2: z.string().optional().or(z.literal('')),
-  labs: z.array(z.string()).default([]),
-  dept_level_responsibility: z.string().optional().or(z.literal('')),
-  college_level_responsibility: z.string().optional().or(z.literal('')),
+  subjects: z.array(z.string()).default([]),
+  dept_responsibility: z.string().optional().or(z.literal('')),
+  college_responsibility: z.string().optional().or(z.literal('')),
   status: z.enum(['active', 'inactive', 'on_leave']).default('active'),
 })
 
@@ -21,7 +19,7 @@ export const studentSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   roll_number: z.string().min(1, 'Roll number is required'),
   department: z.string().min(1, 'Department is required'),
-  year: z.string().min(1, 'Year is required'), // Changed to string (I, II, III, IV)
+  year: z.string().min(1, 'Year is required'), // I, II, III, IV
   section: z.string().optional().or(z.literal('')),
   class_id: z.string().uuid().optional().or(z.literal('')),
   phone: z.string().optional().or(z.literal('')),
@@ -58,18 +56,23 @@ export const timetableSlotSchema = z.object({
 
 export const eventSchema = z.object({
   title: z.string().min(1, 'Title is required'),
-  description: z.string().optional(),
+  description: z.string().optional().or(z.literal('')),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
-  start_time: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format'),
-  end_time: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format'),
-  type: z.enum(['academic', 'meeting', 'social', 'holiday', 'exam']),
-  color: z.string().optional(),
+  time: z.string().optional().or(z.literal('')),
+  type: z.enum(['Academic', 'Meeting', 'Social', 'Recurring']),
+  priority: z.enum(['High', 'Normal', 'Low']).default('Normal'),
 })
 
 export const committeeSchema = z.object({
   name: z.string().min(1, 'Committee name is required'),
-  type: z.enum(['statutory', 'non-statutory']),
-  description: z.string().optional(),
+  type: z.enum(['Statutory', 'Non-Statutory']),
+  category: z.enum(['Academic', 'Administrative', 'Cultural', 'Sports', 'Technical', 'Welfare', 'Examination']).default('Administrative'),
+  description: z.string().optional().or(z.literal('')),
+  meeting_schedule: z.string().optional().or(z.literal('')),
+  notes: z.string().optional().or(z.literal('')),
+  formed_date: z.string().optional().or(z.literal('')),
+  chair_name: z.string().optional().or(z.literal('')),
+  status: z.enum(['active', 'inactive']).default('active'),
 })
 
 export const committeeMemberSchema = z.object({
@@ -87,11 +90,12 @@ export const committeeMeetingSchema = z.object({
 
 export const taskSchema = z.object({
   title: z.string().min(1, 'Title is required'),
-  description: z.string().optional(),
+  description: z.string().optional().or(z.literal('')),
   assigned_to: z.string().uuid().optional().or(z.literal('')),
-  status: z.enum(['pending', 'in_progress', 'completed']).default('pending'),
-  priority: z.enum(['low', 'medium', 'high']).default('medium'),
+  status: z.enum(['pending', 'in_progress', 'completed', 'cancelled']).default('pending'),
+  priority: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
   due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal('')),
+  category: z.string().optional().or(z.literal('')),
 })
 
 export const notificationSchema = z.object({

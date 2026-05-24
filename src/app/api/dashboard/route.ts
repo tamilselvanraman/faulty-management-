@@ -30,6 +30,11 @@ export async function GET() {
         total_classes: classes ?? 0,
         events_today: events?.length ?? 0,
         task_completion_percentage: taskCompletionPct,
+        // Aliases to match frontend page.tsx expectations
+        students: students ?? 0,
+        faculty: faculty ?? 0,
+        classes: classes ?? 0,
+        events: events?.length ?? 0,
       },
       error: null,
     })

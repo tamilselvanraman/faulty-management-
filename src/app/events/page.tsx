@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Plus, Calendar as CalendarIcon, ChevronLeft, ChevronRight, 
@@ -54,9 +54,24 @@ const INITIAL_EVENTS: Event[] = [
 export default function EventsPage() {
   const [view, setView] = useState<ViewType>('Month')
   const [currentDate, setCurrentDate] = useState(new Date(2026, 4, 1)) // May 2026
-  const [events, setEvents] = useState<Event[]>(INITIAL_EVENTS)
+  const [events, setEvents] = useState<Event[]>([])
   const [showAddModal, setShowAddModal] = useState(false)
   const [showCSV, setShowCSV] = useState(false)
+
+  const fetchEvents = useCallback(async () => {
+    try {
+      const res = await fetch('/api/events')
+      const { data } = await res.json()
+      if (data) setEvents(data)
+      else setEvents(INITIAL_EVENTS)
+    } catch {
+      setEvents(INITIAL_EVENTS)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchEvents()
+  }, [fetchEvents])
 
   const handlePrevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
@@ -66,24 +81,47 @@ export default function EventsPage() {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
   }
 
-  const handleAddEvent = (newEvent: Omit<Event, 'id'>) => {
-    const eventWithId = {
-      ...newEvent,
-      id: Math.random().toString(36).substr(2, 9)
+  const handleAddEvent = async (newEvent: Omit<Event, 'id'>) => {
+    try {
+      const res = await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEvent)
+      })
+      if (!res.ok) throw new Error()
+      const { data } = await res.json()
+      setEvents(prev => [...prev, data])
+      toast.success('Event scheduled successfully')
+    } catch {
+      toast.error('Failed to create event in database')
     }
-    setEvents([...events, eventWithId as Event])
   }
 
-  const handleBulkUpload = (data: any[]) => {
+  const handleBulkUpload = async (data: any[]) => {
     const newEvents = data.map(item => ({
-      ...item,
-      id: Math.random().toString(36).substr(2, 9),
-      priority: item.priority || 'Normal',
-      type: item.type || 'Academic'
+      title: item.title || 'Untitled Event',
+      type: item.type || 'Academic',
+      date: item.date || new Date().toISOString().split('T')[0],
+      time: item.time || '09:00',
+      location: item.location || 'Online',
+      description: item.description || '',
+      priority: item.priority || 'Normal'
     }))
-    setEvents(prev => [...newEvents, ...prev])
-    setShowCSV(false)
-    toast.success(`${newEvents.length} events imported successfully`)
+
+    try {
+      const res = await fetch('/api/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity: 'events', rows: newEvents })
+      })
+      if (!res.ok) throw new Error()
+      fetchEvents()
+      toast.success(`${newEvents.length} events imported successfully`)
+    } catch {
+      toast.error('Failed to import events')
+    } finally {
+      setShowCSV(false)
+    }
   }
 
   return (

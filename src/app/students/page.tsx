@@ -154,10 +154,10 @@ export default function StudentsPage() {
   }
 
   const handleBulkUpload = async (data: any[]) => {
-    const newStudents = data.map(row => ({
+    const newStudents = data.map((row, idx) => ({
       name: row.name || 'Unknown',
-      email: row.email || '',
-      roll_number: row.roll_number || `REG${Date.now()}`,
+      email: row.email || `stud-${Date.now()}-${idx}@student.edu`,
+      roll_number: row.roll_number || `REG${Date.now()}-${idx}`,
       department: row.department || 'CSE',
       year: row.year || 'I',
       status: row.status || 'active',
@@ -166,17 +166,18 @@ export default function StudentsPage() {
     }))
     
     try {
-      const res = await fetch('/api/students/bulk', {
+      const res = await fetch('/api/import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ students: newStudents })
+        body: JSON.stringify({ entity: 'students', rows: newStudents })
       })
       if (!res.ok) throw new Error()
       fetchStudents()
-      setShowCSV(false)
       toast.success(`Successfully imported students`)
     } catch {
       toast.error('Failed to import students')
+    } finally {
+      setShowCSV(false)
     }
   }
 

@@ -144,10 +144,19 @@ export default function FacultyProfilePage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Simulate API fetch
-    const data = MOCK_FACULTY[id] || MOCK_FACULTY['1'] // Fallback to 1 for demo
-    setFaculty(data)
-    setLoading(false)
+    const fetchDetails = async () => {
+      try {
+        const res = await fetch(`/api/faculty/${id}`)
+        const { data } = await res.json()
+        if (data) setFaculty(data)
+      } catch {
+        const data = MOCK_FACULTY[id] || MOCK_FACULTY['1'] // Fallback to 1 for demo
+        setFaculty(data)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchDetails()
   }, [id])
 
   if (loading) return (
