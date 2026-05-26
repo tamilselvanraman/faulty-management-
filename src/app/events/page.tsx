@@ -6,7 +6,7 @@ import {
   Plus, Calendar as CalendarIcon, ChevronLeft, ChevronRight, 
   MoreVertical, Clock, MapPin, Filter, Search, X,
   CheckCircle2, AlertCircle, Info, Bookmark, CalendarDays,
-  Users, Download, Upload
+  Users, Download, Upload, Pencil, Trash2, Tag
 } from 'lucide-react'
 import Image from 'next/image'
 import PortalModal from '@/components/ui/PortalModal'
@@ -28,10 +28,11 @@ interface Event {
   isWeekly?: boolean
 }
 
-const CATEGORIES = [
-  { label: 'Academic', color: 'bg-indigo-600', count: 13 },
-  { label: 'Meeting', color: 'bg-orange-500', count: 4 },
-  { label: 'Social', color: 'bg-emerald-500', count: 8 },
+const CATEGORY_CONFIG = [
+  { label: 'Academic', color: 'bg-indigo-600' },
+  { label: 'Meeting', color: 'bg-orange-500' },
+  { label: 'Social', color: 'bg-emerald-500' },
+  { label: 'Recurring', color: 'bg-amber-500' },
 ]
 
 const EVENT_TYPE_STYLES: Record<string, string> = {
@@ -41,15 +42,7 @@ const EVENT_TYPE_STYLES: Record<string, string> = {
   Recurring: 'bg-amber-50 text-amber-700 border-amber-100',
 }
 
-const INITIAL_EVENTS: Event[] = [
-  { id: '1', title: 'DEAN\'S MEETING', type: 'Meeting', date: '2026-05-02', time: '10:00 AM', location: 'Conference Room A' },
-  { id: '2', title: 'MID-TERM SUBMISSION', type: 'Academic', date: '2026-05-14', time: '11:59 PM', location: 'Online' },
-  { id: '3', title: 'SEMINAR', type: 'Academic', date: '2026-05-17', time: '10:00 AM', location: 'Main Hall', isWeekly: true },
-  { id: '4', title: 'BASKETBALL TRYOUTS', type: 'Social', date: '2026-05-07', time: '4:00 PM', location: 'Gym' },
-  { id: '5', title: 'CALCULUS LAB', type: 'Academic', date: '2026-05-09', time: '9:00 AM', location: 'Lab 2' },
-  { id: '6', title: 'FACULTY LUNCH', type: 'Meeting', date: '2026-05-09', time: '1:00 PM', location: 'Cafeteria' },
-  { id: '7', title: 'ALUMNI GALA', type: 'Social', date: '2026-05-23', time: '6:00 PM', location: 'Grand Ballroom' },
-]
+
 
 export default function EventsPage() {
   const [view, setView] = useState<ViewType>('Month')
@@ -57,15 +50,16 @@ export default function EventsPage() {
   const [events, setEvents] = useState<Event[]>([])
   const [showAddModal, setShowAddModal] = useState(false)
   const [showCSV, setShowCSV] = useState(false)
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null)
 
   const fetchEvents = useCallback(async () => {
     try {
       const res = await fetch('/api/events')
       const { data } = await res.json()
-      if (data) setEvents(data)
-      else setEvents(INITIAL_EVENTS)
+      if (data && Array.isArray(data)) setEvents(data)
     } catch {
-      setEvents(INITIAL_EVENTS)
+      // keep empty on error
     }
   }, [])
 
@@ -94,6 +88,37 @@ export default function EventsPage() {
       toast.success('Event scheduled successfully')
     } catch {
       toast.error('Failed to create event in database')
+    }
+  }
+
+  const handleEditEvent = async (updated: Event) => {
+    try {
+      const res = await fetch(`/api/events/${updated.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated)
+      })
+      if (!res.ok) throw new Error()
+      const { data } = await res.json()
+      setEvents(prev => prev.map(e => e.id === data.id ? data : e))
+      setSelectedEvent(data)
+      setEditingEvent(null)
+      toast.success('Event updated successfully')
+    } catch {
+      toast.error('Failed to update event')
+    }
+  }
+
+  const handleDeleteEvent = async (id: string) => {
+    if (!confirm('Delete this event? This cannot be undone.')) return
+    try {
+      const res = await fetch(`/api/events/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error()
+      setEvents(prev => prev.filter(e => e.id !== id))
+      setSelectedEvent(null)
+      toast.success('Event deleted')
+    } catch {
+      toast.error('Failed to delete event')
     }
   }
 
@@ -212,7 +237,7 @@ export default function EventsPage() {
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.2 }}
         >
-          {view === 'Month' && <MonthView currentDate={currentDate} events={events} />}
+          {view === 'Month' && <MonthView currentDate={currentDate} events={events} onSelect={setSelectedEvent} />}
           {view === 'Week' && <WeekView currentDate={currentDate} events={events} />}
           {view === 'Day' && <DayView currentDate={currentDate} events={events} />}
         </motion.div>
@@ -242,6 +267,27 @@ export default function EventsPage() {
         </AnimatePresence>
       </PortalModal>
 
+      {/* Event Detail / Edit Modal */}
+      <PortalModal>
+        <AnimatePresence>
+          {selectedEvent && !editingEvent && (
+            <EventDetailModal
+              event={selectedEvent}
+              onClose={() => setSelectedEvent(null)}
+              onEdit={() => setEditingEvent(selectedEvent)}
+              onDelete={handleDeleteEvent}
+            />
+          )}
+          {editingEvent && (
+            <EditEventModal
+              event={editingEvent}
+              onClose={() => { setEditingEvent(null); setSelectedEvent(null) }}
+              onSave={handleEditEvent}
+            />
+          )}
+        </AnimatePresence>
+      </PortalModal>
+
       {/* Floating Action Button */}
       <button 
         onClick={() => setShowAddModal(true)}
@@ -253,7 +299,7 @@ export default function EventsPage() {
   )
 }
 
-function MonthView({ currentDate, events }: { currentDate: Date, events: Event[] }) {
+function MonthView({ currentDate, events, onSelect }: { currentDate: Date, events: Event[], onSelect: (e: Event) => void }) {
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()
   const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay()
   
@@ -270,19 +316,22 @@ function MonthView({ currentDate, events }: { currentDate: Date, events: Event[]
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       {/* Sidebar Controls */}
       <div className="lg:col-span-3 space-y-6">
-        {/* Categories Card */}
+        {/* Categories Card — real counts from DB */}
         <div className="bg-white border border-slate-200 rounded-[24px] sm:rounded-[32px] p-5 sm:p-6 shadow-sm">
           <h3 className="text-lg font-black text-slate-900 mb-6">Categories</h3>
           <div className="space-y-4">
-            {CATEGORIES.map((cat) => (
-              <div key={cat.label} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${cat.color}`} />
-                  <span className="text-[15px] font-bold text-slate-600">{cat.label}</span>
+            {CATEGORY_CONFIG.map((cat) => {
+              const count = events.filter(e => e.type === cat.label).length
+              return (
+                <div key={cat.label} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${cat.color}`} />
+                    <span className="text-[15px] font-bold text-slate-600">{cat.label}</span>
+                  </div>
+                  <span className="bg-slate-50 px-3 py-1 rounded-lg text-xs font-black text-slate-400">{count}</span>
                 </div>
-                <span className="bg-slate-50 px-3 py-1 rounded-lg text-xs font-black text-slate-400">{cat.count}</span>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 
@@ -374,6 +423,7 @@ function MonthView({ currentDate, events }: { currentDate: Date, events: Event[]
                     {dayEvents.map(e => (
                       <div 
                         key={e.id}
+                        onClick={() => onSelect(e)}
                         className={`px-1.5 sm:px-2 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border text-[8px] sm:text-[9px] font-black leading-tight break-words uppercase tracking-tighter transition-all hover:scale-[1.02] cursor-pointer shadow-sm ${EVENT_TYPE_STYLES[e.type]}`}
                       >
                         <div className="flex flex-col">
@@ -840,10 +890,11 @@ function DayView({ currentDate, events }: { currentDate: Date, events: Event[] }
 }
 
 function AddEventModal({ onClose, onAdd }: { onClose: () => void, onAdd: (e: Omit<Event, 'id'>) => void }) {
+  const todayStr = new Date().toISOString().split('T')[0]
   const [formData, setFormData] = useState({
     title: '',
     type: 'Academic' as Event['type'],
-    date: '2026-05-14',
+    date: todayStr,
     time: '09:00',
     location: '',
     description: ''
@@ -862,7 +913,7 @@ function AddEventModal({ onClose, onAdd }: { onClose: () => void, onAdd: (e: Omi
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="bg-white rounded-[32px] sm:rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border border-white/20"
+        className="bg-white rounded-[32px] sm:rounded-[40px] w-[95vw] md:w-[672px] overflow-hidden shadow-2xl border border-white/20"
       >
         <div className="px-6 sm:px-10 py-6 sm:py-10 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
           <div>
@@ -962,6 +1013,245 @@ function AddEventModal({ onClose, onAdd }: { onClose: () => void, onAdd: (e: Omi
               className="flex-1 py-4 sm:py-5 bg-indigo-600 text-white rounded-2xl sm:rounded-3xl font-black shadow-2xl shadow-indigo-200 hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98] transition-all text-base sm:text-lg"
             >
               Create Event
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────
+// Event Detail Modal — view full event, then edit or delete
+// ─────────────────────────────────────────────────────────
+function EventDetailModal({
+  event, onClose, onEdit, onDelete
+}: {
+  event: Event
+  onClose: () => void
+  onEdit: () => void
+  onDelete: (id: string) => void
+}) {
+  const typeColor = {
+    Academic: 'bg-indigo-600',
+    Meeting: 'bg-orange-500',
+    Social: 'bg-emerald-500',
+    Recurring: 'bg-amber-500',
+  }[event.type] ?? 'bg-slate-500'
+
+  return (
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xl flex items-center justify-center z-[100] p-4" onClick={onClose}>
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        onClick={e => e.stopPropagation()}
+        className="bg-white rounded-[32px] w-[95vw] md:w-[540px] overflow-hidden shadow-2xl"
+      >
+        {/* Coloured header band */}
+        <div className={`${typeColor} px-8 py-6 flex items-start justify-between`}>
+          <div>
+            <span className="text-white/70 text-[10px] font-black uppercase tracking-widest">{event.type}</span>
+            <h2 className="text-2xl font-black text-white mt-1 leading-tight">{event.title}</h2>
+          </div>
+          <button onClick={onClose} className="p-2 bg-white/20 hover:bg-white/30 rounded-2xl transition-all">
+            <X size={18} className="text-white" />
+          </button>
+        </div>
+
+        {/* Detail rows */}
+        <div className="px-8 py-6 space-y-4">
+          <div className="flex items-center gap-3 text-slate-700">
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
+              <CalendarDays size={16} className="text-indigo-600" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date</p>
+              <p className="text-[15px] font-bold text-slate-900">
+                {new Date(event.date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+              </p>
+            </div>
+          </div>
+
+          {event.time && (
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
+                <Clock size={16} className="text-orange-500" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Time</p>
+                <p className="text-[15px] font-bold text-slate-900">{event.time}</p>
+              </div>
+            </div>
+          )}
+
+          {event.location && (
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                <MapPin size={16} className="text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Location</p>
+                <p className="text-[15px] font-bold text-slate-900">{event.location}</p>
+              </div>
+            </div>
+          )}
+
+          {event.description && (
+            <div className="mt-2 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Description</p>
+              <p className="text-sm font-medium text-slate-700 leading-relaxed">{event.description}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Action buttons */}
+        <div className="px-8 pb-8 flex gap-4">
+          <button
+            onClick={() => onDelete(event.id)}
+            className="flex items-center gap-2 px-6 py-3 bg-red-50 text-red-600 border border-red-100 rounded-2xl font-black text-sm hover:bg-red-100 transition-all"
+          >
+            <Trash2 size={16} /> Delete
+          </button>
+          <button
+            onClick={onEdit}
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all"
+          >
+            <Pencil size={16} /> Edit Event
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────
+// Edit Event Modal — pre-filled form to update an event
+// ─────────────────────────────────────────────────────────
+function EditEventModal({
+  event, onClose, onSave
+}: {
+  event: Event
+  onClose: () => void
+  onSave: (e: Event) => void
+}) {
+  const [formData, setFormData] = useState({
+    title: event.title,
+    type: event.type,
+    date: event.date,
+    time: event.time ?? '',
+    location: event.location ?? '',
+    description: event.description ?? '',
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!formData.title || !formData.date) return
+    onSave({ ...event, ...formData })
+  }
+
+  return (
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xl flex items-center justify-center z-[100] p-4">
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        className="bg-white rounded-[32px] sm:rounded-[40px] w-[95vw] md:w-[620px] overflow-hidden shadow-2xl"
+      >
+        <div className="px-8 py-7 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Edit Event</h2>
+            <p className="text-slate-500 font-medium text-sm mt-1">Update the details below and save.</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-white rounded-2xl transition-all shadow-sm">
+            <X size={20} className="text-slate-400" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="p-8 space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+            <div className="space-y-2">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Event Title</label>
+              <input
+                required
+                value={formData.title}
+                onChange={e => setFormData({ ...formData, title: e.target.value })}
+                className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold placeholder:text-slate-300 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-base"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Type</label>
+                <div className="relative">
+                  <select
+                    value={formData.type}
+                    onChange={e => setFormData({ ...formData, type: e.target.value as Event['type'] })}
+                    className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold outline-none focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 transition-all cursor-pointer appearance-none"
+                  >
+                    <option>Academic</option>
+                    <option>Meeting</option>
+                    <option>Social</option>
+                    <option>Recurring</option>
+                  </select>
+                  <ChevronRight size={16} className="absolute right-5 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Date</label>
+                <input
+                  required type="date"
+                  value={formData.date}
+                  onChange={e => setFormData({ ...formData, date: e.target.value })}
+                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold outline-none focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Start Time</label>
+                <input
+                  type="time"
+                  value={formData.time}
+                  onChange={e => setFormData({ ...formData, time: e.target.value })}
+                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold outline-none focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Location</label>
+                <input
+                  value={formData.location}
+                  onChange={e => setFormData({ ...formData, location: e.target.value })}
+                  placeholder="e.g., Auditorium B"
+                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold placeholder:text-slate-300 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+              <textarea
+                rows={3}
+                value={formData.description}
+                onChange={e => setFormData({ ...formData, description: e.target.value })}
+                className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold placeholder:text-slate-300 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all resize-none"
+              />
+            </div>
+          </div>
+
+          <div className="px-8 pb-8 flex gap-4">
+            <button
+              type="button" onClick={onClose}
+              className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black hover:bg-slate-200 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            >
+              Save Changes
             </button>
           </div>
         </form>

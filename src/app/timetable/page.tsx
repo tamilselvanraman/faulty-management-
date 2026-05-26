@@ -11,6 +11,9 @@ import {
   Calendar, Layers, Monitor, Sparkles, Upload, ChevronRight
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import { downloadCSV } from '@/utils/csvHelper'
+import CSVUploader from '@/components/ui/CSVUploader'
+import PortalModal from '@/components/ui/PortalModal'
 
 // --- Types ---
 interface ClassData {
@@ -26,16 +29,20 @@ interface ClassData {
 
 const BUILDINGS = ['All', 'Main Building', 'Block B', 'Block C', 'Block D', 'Block E']
 
-// --- Constants ---
 const DEPARTMENTS = [
   { name: 'CSE', fullName: 'Computer Science Engineering', color: '#8B5CF6', icon: LayoutGrid, count: 24 },
+  { name: 'IT', fullName: 'Information Technology', color: '#6366F1', icon: Monitor, count: 16 },
   { name: 'ECE', fullName: 'Electronics & Communication', color: '#3B82F6', icon: Building2, count: 18 },
+  { name: 'EEE', fullName: 'Electrical & Electronics', color: '#10B981', icon: Sparkles, count: 14 },
   { name: 'MECH', fullName: 'Mechanical Engineering', color: '#F59E0B', icon: Settings2, count: 15 },
   { name: 'CIVIL', fullName: 'Civil Engineering', color: '#64748B', icon: Building2, count: 12 },
-  { name: 'BME', fullName: 'Biomedical Engineering', color: '#10B981', icon: Users, count: 10 },
-  { name: 'AIDS', fullName: 'AI & Data Science', color: '#0EA5E9', icon: BarChart3, count: 20 },
   { name: 'MBA', fullName: 'Business Administration', color: '#F97316', icon: GraduationCap, count: 8 },
-  { name: 'AENS', fullName: 'Arts & Natural Sciences', color: '#06B6D4', icon: BookOpen, count: 14 },
+  { name: 'AENS', fullName: 'Automobile Engineering', color: '#06B6D4', icon: BookOpen, count: 14 },
+  { name: 'BME', fullName: 'Biomedical Engineering', color: '#EC4899', icon: Users, count: 10 },
+  { name: 'AIDS', fullName: 'AI & Data Science', color: '#0EA5E9', icon: BarChart3, count: 20 },
+  { name: 'MCA', fullName: 'Computer Applications', color: '#14B8A6', icon: Layers, count: 10 },
+  { name: 'SFE', fullName: 'Safety & Fire Engineering', color: '#EF4444', icon: Building2, count: 8 },
+  { name: 'S&H', fullName: 'Science & Humanities', color: '#84CC16', icon: BookOpen, count: 15 },
 ]
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -73,10 +80,62 @@ function TimetableContent() {
   const [currentTimeSlot, setCurrentTimeSlot] = useState<string | null>(null)
   const [currentDay, setCurrentDay] = useState<string | null>(null)
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
+  const [showCSV, setShowCSV] = useState(false)
 
   const [timetableSlots, setTimetableSlots] = useState<any[]>([])
   const [classes, setClasses] = useState<any[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
+
+  const handleBulkUpload = async (data: any[]) => {
+    const newTimetable = data.map((row) => {
+      return {
+        department: String(row.Department || row.department || '').trim(),
+        academic_year: String(row.Year || row.year || '').trim(),
+        section: String(row.Section || row.section || '').trim(),
+        day_of_week: String(row.Day || row.day || '').trim(),
+        period_number: parseInt(row.Period || row.period || '1'),
+        subject: String(row.Subject || row.subject || '').trim(),
+        employee_id: String(row.FacultyEmployeeID || row.employee_id || '').trim(),
+      }
+    }).filter(row => row.department && row.academic_year && row.section && row.day_of_week && row.subject)
+
+    try {
+      const res = await fetch('/api/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity: 'timetable', rows: newTimetable })
+      })
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || 'Import failed')
+      toast.success(`Successfully imported ${result.data?.inserted || 0} timetable slots`)
+      if (selectedDept) {
+        // Trigger data reload
+        const loadTimetableData = async () => {
+          try {
+            setLoadingSlots(true)
+            const classRes = await fetch(`/api/classes?department=${selectedDept}`)
+            const { data: classData } = await classRes.json()
+            if (classData && classData.length > 0) {
+              setClasses(classData)
+              const firstClass = classData[0]
+              const slotRes = await fetch(`/api/timetable?class_id=${firstClass.id}`)
+              const { data: slotData } = await slotRes.json()
+              if (slotData) setTimetableSlots(slotData)
+            }
+          } catch (err) {
+            console.error(err)
+          } finally {
+            setLoadingSlots(false)
+          }
+        }
+        loadTimetableData()
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to import timetable slots')
+    } finally {
+      setShowCSV(false)
+    }
+  }
 
   useEffect(() => {
     const parseTimeToMinutes = (timeStr: string) => {
@@ -447,8 +506,8 @@ function TimetableContent() {
 
               {/* COMMAND BAR & FILTERS */}
               <motion.div variants={fadeUp} custom={8} className="space-y-6 pt-4">
-                <div className="flex flex-col md:flex-row gap-4 items-stretch">
-                  <div className="relative flex-[4] group">
+                <div className="flex flex-col lg:flex-row gap-4 items-center w-full">
+                  <div className="relative flex-1 group w-full">
                     <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
                       <Search size={20} className="text-slate-400 group-focus-within:text-primary transition-colors" />
                     </div>
@@ -463,13 +522,13 @@ function TimetableContent() {
                       <div className="px-2 py-1 rounded-md bg-slate-100 text-[8px] font-black text-slate-400 border border-slate-200">⌘ K</div>
                     </div>
                   </div>
-                  <div className="flex flex-1 gap-4">
-                    <div className="relative flex-1 group">
+                  <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3 w-full lg:w-auto mt-4 lg:mt-0 shrink-0">
+                    <div className="relative group min-w-[160px] col-span-2 sm:col-span-1">
                       <Building2 size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-primary transition-colors pointer-events-none" />
                       <select 
                         value={selectedBuilding}
                         onChange={(e) => setSelectedBuilding(e.target.value)}
-                        className="w-full pl-12 pr-10 py-4 bg-white border border-slate-200 rounded-3xl text-xs font-bold text-slate-600 appearance-none outline-none hover:border-primary/20 hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
+                        className="w-full pl-12 pr-10 py-3.5 bg-white border border-slate-200 rounded-2xl text-xs font-bold text-slate-600 appearance-none outline-none hover:border-primary/20 hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
                       >
                         {BUILDINGS.map(b => <option key={b} value={b}>{b === 'All' ? 'All Campuses' : b}</option>)}
                       </select>
@@ -477,6 +536,14 @@ function TimetableContent() {
                         <ChevronRight size={16} className="rotate-90" />
                       </div>
                     </div>
+                    <button onClick={() => downloadCSV('timetable_import_template.csv', ['Department', 'Year', 'Section', 'Day', 'Period', 'Subject', 'FacultyEmployeeID'], [{ Department: 'CSE', Year: 'III', Section: 'A', Day: 'Monday', Period: 1, Subject: 'Operating Systems', FacultyEmployeeID: '1136' }])}
+                      className="flex justify-center items-center gap-2 px-5 py-3.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 rounded-2xl text-xs font-bold transition-all hover:-translate-y-0.5 shadow-sm">
+                      <Download size={14} className="text-indigo-600 w-3.5 h-3.5" /> Format
+                    </button>
+                    <button onClick={() => setShowCSV(true)}
+                      className="flex justify-center items-center gap-2 px-5 py-3.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 rounded-2xl text-xs font-bold transition-all hover:-translate-y-0.5 shadow-sm">
+                      <Upload size={14} className="text-indigo-600 w-3.5 h-3.5" /> Import
+                    </button>
                   </div>
                 </div>
 
@@ -663,6 +730,19 @@ function TimetableContent() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* CSV IMPORT MODAL */}
+      <PortalModal>
+        <AnimatePresence>
+          {showCSV && (
+            <CSVUploader 
+              onUpload={handleBulkUpload} 
+              onClose={() => setShowCSV(false)}
+              sampleHeaders={['Department', 'Year', 'Section', 'Day', 'Period', 'Subject', 'FacultyEmployeeID']} 
+            />
+          )}
+        </AnimatePresence>
+      </PortalModal>
     </div>
   )
 }

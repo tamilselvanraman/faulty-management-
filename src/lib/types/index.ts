@@ -169,18 +169,20 @@ export interface ApiResponse<T> {
   }
 }
 
-// ─── Departments ──────────────────────────────────────────────────────────────
 export const DEPARTMENTS = [
-  'Computer Science',
-  'Information Technology',
-  'Electronics & Communication',
-  'Electrical Engineering',
-  'Mechanical Engineering',
-  'Civil Engineering',
-  'Mathematics',
-  'Physics',
-  'Chemistry',
-  'Management Studies',
+  'CSE',
+  'IT',
+  'ECE',
+  'EEE',
+  'MECH',
+  'CIVIL',
+  'MBA',
+  'AENS',
+  'BME',
+  'AIDS',
+  'MCA',
+  'SFE',
+  'S&H',
 ] as const
 
 export type Department = typeof DEPARTMENTS[number]

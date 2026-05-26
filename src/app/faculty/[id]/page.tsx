@@ -23,8 +23,8 @@ interface Faculty {
   shift: 'Day' | 'Eve' | 'Noon'
   subjects?: string[]
   labs?: string[]
-  dept_responsibility?: string[]
-  college_responsibility?: string[]
+  dept_responsibility?: string | string[]
+  college_responsibility?: string | string[]
   qualification?: string
   experience_years?: number
   status: 'active' | 'inactive' | 'on_leave'
@@ -149,7 +149,8 @@ export default function FacultyProfilePage() {
         const res = await fetch(`/api/faculty/${id}`)
         const { data } = await res.json()
         if (data) setFaculty(data)
-      } catch {
+      } catch (err) {
+        console.error(`Frontend fetchDetails (id: ${id}) - Error fetching data:`, err)
         const data = MOCK_FACULTY[id] || MOCK_FACULTY['1'] // Fallback to 1 for demo
         setFaculty(data)
       } finally {
@@ -178,6 +179,14 @@ export default function FacultyProfilePage() {
       </div>
     </div>
   )
+
+  const deptRoles = typeof faculty.dept_responsibility === 'string'
+    ? faculty.dept_responsibility.split('|').map(s => s.trim()).filter(Boolean)
+    : (Array.isArray(faculty.dept_responsibility) ? faculty.dept_responsibility : [])
+
+  const collegeRoles = typeof faculty.college_responsibility === 'string'
+    ? faculty.college_responsibility.split('|').map(s => s.trim()).filter(Boolean)
+    : (Array.isArray(faculty.college_responsibility) ? faculty.college_responsibility : [])
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-12">
@@ -369,12 +378,16 @@ export default function FacultyProfilePage() {
                       Departmental Roles
                     </p>
                     <div className="space-y-3">
-                      {faculty.dept_responsibility?.map((resp, i) => (
-                        <div key={i} className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-2xl border border-transparent hover:border-blue-100 hover:bg-white transition-all group/item">
-                          <div className="w-2 h-2 rounded-full bg-blue-400 group-hover/item:scale-150 transition-transform" />
-                          <span className="text-[13px] font-bold text-slate-700">{resp}</span>
-                        </div>
-                      )) || <p className="text-xs font-bold text-slate-300 italic px-3">No departmental roles assigned</p>}
+                      {deptRoles.length > 0 ? (
+                        deptRoles.map((resp, i) => (
+                          <div key={i} className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-2xl border border-transparent hover:border-blue-100 hover:bg-white transition-all group/item">
+                            <div className="w-2 h-2 rounded-full bg-blue-400 group-hover/item:scale-150 transition-transform" />
+                            <span className="text-[13px] font-bold text-slate-700">{resp}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-xs font-bold text-slate-300 italic px-3">No departmental roles assigned</p>
+                      )}
                     </div>
                   </div>
                   <div>
@@ -383,12 +396,16 @@ export default function FacultyProfilePage() {
                       Institutional Roles
                     </p>
                     <div className="space-y-3">
-                      {faculty.college_responsibility?.map((resp, i) => (
-                        <div key={i} className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-2xl border border-transparent hover:border-purple-100 hover:bg-white transition-all group/item">
-                          <div className="w-2 h-2 rounded-full bg-purple-400 group-hover/item:scale-150 transition-transform" />
-                          <span className="text-[13px] font-bold text-slate-700">{resp}</span>
-                        </div>
-                      )) || <p className="text-xs font-bold text-slate-300 italic px-3">No institutional roles assigned</p>}
+                      {collegeRoles.length > 0 ? (
+                        collegeRoles.map((resp, i) => (
+                          <div key={i} className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-2xl border border-transparent hover:border-purple-100 hover:bg-white transition-all group/item">
+                            <div className="w-2 h-2 rounded-full bg-purple-400 group-hover/item:scale-150 transition-transform" />
+                            <span className="text-[13px] font-bold text-slate-700">{resp}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-xs font-bold text-slate-300 italic px-3">No institutional roles assigned</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -400,7 +417,7 @@ export default function FacultyProfilePage() {
               <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
               
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12 relative z-10">
-                <MetricCard label="Attendance" value="94.8%" trend="+2.4%" />
+                <MetricCard label="Attendance" value="94.8%" />
                 <MetricCard label="Classes" value="12/Week" sub="Assigned" />
                 <MetricCard label="Committees" value="03" sub="Active" />
                 <MetricCard label="Rating" value="4.9" isRating />
@@ -448,24 +465,28 @@ export default function FacultyProfilePage() {
 
 function MetricCard({ label, value, trend, sub, isRating }: { label: string; value: string; trend?: string; sub?: string; isRating?: boolean }) {
   return (
-    <div className="p-6 rounded-[32px] bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">{label}</p>
-      <div className="flex items-end justify-between">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <p className={`text-2xl font-black tracking-tight ${isRating ? 'text-amber-500' : 'text-slate-900'}`}>{value}</p>
-            {isRating && <Star size={20} fill="currentColor" className="text-amber-500 mb-1" />}
-          </div>
-          {sub && <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{sub}</p>}
-        </div>
+    <div className="p-6 rounded-[32px] bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between min-h-[135px]">
+      <div className="flex items-center justify-between gap-2 h-5">
+        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{label}</span>
         {trend && (
-          <div className="px-2 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black flex items-center gap-1 mb-1">
-            <ArrowUpRight size={10} />
+          <span className="px-2 h-5 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black inline-flex items-center gap-0.5 shrink-0">
+            <ArrowUpRight size={10} strokeWidth={3} className="shrink-0" />
             {trend}
-          </div>
+          </span>
+        )}
+      </div>
+      <div className="mt-4">
+        <div className="flex items-center gap-2">
+          <p className={`text-2xl font-black tracking-tight leading-none ${isRating ? 'text-amber-500' : 'text-slate-900'}`}>{value}</p>
+          {isRating && <Star size={18} fill="currentColor" className="text-amber-500 mb-0.5" />}
+        </div>
+        {sub ? (
+          <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest leading-none mt-1.5">{sub}</p>
+        ) : (
+          <p className="text-[10px] leading-none mt-1.5 opacity-0 select-none">&nbsp;</p>
         )}
       </div>
     </div>
-  )
+  );
 }
 

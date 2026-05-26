@@ -1,10 +1,10 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { facultySchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient()
+    const supabase = createServiceClient()
     const { searchParams } = new URL(request.url)
     const department = searchParams.get('department')
     const search = searchParams.get('search')
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
+    const supabase = createServiceClient()
     const body = await request.json()
     const parsed = facultySchema.safeParse(body)
 
@@ -48,4 +48,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ data: null, error: err.message ?? 'Failed to create faculty' }, { status: 500 })
   }
 }
+
+
 

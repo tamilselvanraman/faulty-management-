@@ -625,7 +625,7 @@ function CommitteeModal({ editItem, onSave, onClose }: {
     >
       <motion.div 
         initial={{ scale: 0.95, opacity: 0, y: 40 }} animate={{ scale: 1, opacity: 1, y: 0 }}
-        className="bg-white rounded-[48px] w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col border border-white"
+        className="bg-white rounded-[48px] w-[95vw] md:w-[672px] max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col border border-white"
       >
         <div className="flex items-center justify-between px-12 py-10 border-b border-slate-100 bg-slate-50/30">
           <div className="flex items-center gap-5">
@@ -805,7 +805,7 @@ function CommitteeDetailPanel({ committee, onClose }: { committee: Committee; on
       <motion.div 
         initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-        className="bg-white h-full w-full max-w-2xl shadow-[-40px_0_100px_rgba(0,0,0,0.15)] flex flex-col border-l border-white overflow-hidden"
+        className="bg-white h-full w-[95vw] md:w-[672px] max-w-2xl shadow-[-40px_0_100px_rgba(0,0,0,0.15)] flex flex-col border-l border-white overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         {/* Dynamic Header */}

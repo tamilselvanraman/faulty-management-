@@ -33,7 +33,7 @@ interface Student {
   is_top_5: boolean
 }
 
-const DEPARTMENTS = ['AENS', 'BME', 'AIDS', 'CSE', 'ECE', 'MECH', 'CIVIL', 'MBA']
+const DEPARTMENTS = ['CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL', 'MBA', 'AENS', 'BME', 'AIDS', 'MCA', 'SFE', 'S&H']
 const YEARS = ['I', 'II', 'III', 'IV']
 
 const STATUS_STYLES: Record<string, string> = {

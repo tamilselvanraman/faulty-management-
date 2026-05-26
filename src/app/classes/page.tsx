@@ -38,7 +38,7 @@ const MOCK_CLASSES: ClassData[] = [
 ]
 
 const BUILDINGS = ['All', 'Main Building', 'Block B', 'Block C', 'Block D', 'Block E']
-const DEPARTMENTS = ['All', 'CSE', 'ECE', 'MECH', 'CIVIL', 'BME', 'AIDS', 'MBA', 'AENS']
+const DEPARTMENTS = ['All', 'CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL', 'MBA', 'AENS', 'BME', 'AIDS', 'MCA', 'SFE', 'S&H']
 const YEARS = ['I', 'II', 'III', 'IV']
 
 // --- Components ---
@@ -349,7 +349,7 @@ export default function ClassesPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-white rounded-[40px] shadow-2xl overflow-hidden"
+              className="relative w-[95vw] md:w-[672px] bg-white rounded-[40px] shadow-2xl overflow-hidden"
             >
               <div className="p-10">
                 <div className="flex items-center justify-between mb-8">

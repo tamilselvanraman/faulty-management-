@@ -38,8 +38,8 @@ interface Faculty {
   photo_url?: string
 }
 
-const DEPARTMENTS = ['All Departments', 'CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL', 'MBA', 'AENS', 'BME', 'AIDS']
-const DESIGNATIONS = ['All Designations', 'HOD', 'Professor', 'Assistant Professor', 'Lab Assistant']
+const DEPARTMENTS = ['All Departments', 'CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL', 'MBA', 'AENS', 'BME', 'AIDS', 'MCA', 'SFE', 'S&H']
+const DESIGNATIONS = ['All Designations', 'HOD', 'Professor', 'Associate Professor', 'Assistant Professor', 'Lab Assistant']
 const SHIFTS = ['Day', 'Eve', 'Noon']
 
 const fadeUp = {
@@ -118,10 +118,13 @@ export default function FacultyPage() {
 
   const fetchFaculty = useCallback(async () => {
     try {
-      const res = await fetch('/api/faculty')
+      const res = await fetch('/api/faculty?per_page=1000')
       const { data } = await res.json()
       if (data && data.length > 0) setFaculty(data)
-    } catch { /* use mock */ }
+    } catch (err) {
+      console.error('Frontend fetchFaculty - Error fetching data:', err)
+      /* use mock */
+    }
   }, [])
 
   useEffect(() => { fetchFaculty() }, [fetchFaculty])
@@ -166,21 +169,73 @@ export default function FacultyPage() {
   }
 
   const handleBulkUpload = async (data: any[]) => {
-    const newFaculty = data.map((row, idx) => ({
-      employee_id: row.employee_id || row.EmployeeID || `FAC${idx + 100}`,
-      name: row.name || row.Name || 'Unknown',
-      email: row.email || row.Email || `fac-${Date.now()}-${idx}@college.edu`,
-      phone: row.phone || row.Phone || '',
-      department: row.department || row.Department || 'CSE',
-      designation: row.designation || row.Designation || 'Assistant Professor',
-      qualification: row.qualification || 'M.Tech',
-      status: 'active',
-      joining_date: row.joining_date || row['Joining Date'] || new Date().toISOString().split('T')[0],
-      subjects: (row.subjects || row.Subjects || '').split('|').filter(Boolean),
-      labs: (row.labs || row.Labs || '').split('|').filter(Boolean),
-      dept_responsibility: row.dept_responsibility || row.Responsibilities || '',
-      shift: row.shift || 'Day',
-    }))
+    const newFaculty = data.map((row, idx) => {
+      const rawEmployeeId = row.employee_id || row.EmployeeID || row['Staff ID'] || `FAC${idx + 100}`;
+      const rawName = row.name || row.Name || row['Staff Name'] || 'Unknown';
+      const rawEmail = row.email || row.Email || row['Official Mail ID'] || `fac-${Date.now()}-${idx}@college.edu`;
+      const rawPhone = row.phone || row.Phone || row['Mobile No'] || '';
+      const rawDept = row.department || row.Department || 'CSE';
+      const rawDesig = row.designation || row.Designation || 'Assistant Professor';
+
+      // Map departments
+      let mappedDept = String(rawDept).trim();
+      const DEPT_MAPPING: Record<string, string> = {
+        'AUTOMOBILE ENGINEERING': 'AENS',
+        'BIOMEDICAL ENGINEERING': 'BME',
+        'CHEMISTRY': 'S&H',
+        'CIVIL ENGINEERING': 'CIVIL',
+        'COMPUTER  SCIENCE AND ENGINEERING (IOT)': 'AIDS',
+        'COMPUTER SCIENCE AND DESIGN': 'CSE',
+        'COMPUTER SCIENCE AND ENGINEERING': 'CSE',
+        'CYBER SECURITY': 'CSE',
+        'ELECTRICAL AND ELECTRONIC ENGINEERING': 'EEE',
+        'ELECTRONICS AND COMMUNICATION ENGINEERING': 'ECE',
+        'ENGLISH': 'S&H',
+        'INFORMATION TECHNOLOGY': 'IT',
+        'MASTER OF BUSNIESS ADMINISTRATION': 'MBA',
+        'MASTER OF COMPUTER APPLICATIONS': 'MCA',
+        'MATHEMATICS': 'S&H',
+        'MECHANICAL ENGINEERING': 'MECH',
+        'PHYSICS': 'S&H',
+        'SAFETY AND FIRE ENGINEERING': 'SFE',
+        'TAMIL': 'S&H'
+      };
+      if (DEPT_MAPPING[mappedDept.toUpperCase()]) {
+        mappedDept = DEPT_MAPPING[mappedDept.toUpperCase()];
+      }
+
+      // Map designation
+      let mappedDesig = String(rawDesig).trim();
+      const d = mappedDesig.toUpperCase();
+      if (d.includes('HOD')) mappedDesig = 'HOD';
+      else if (d.includes('ASSOCIATE PROFESSOR')) mappedDesig = 'Associate Professor';
+      else if (d.includes('ASSISTANT PROFESSOR')) mappedDesig = 'Assistant Professor';
+      else if (d.includes('PROFESSOR')) mappedDesig = 'Professor';
+      else if (d.includes('PROGRAMMER') || d.includes('TECHNICAL TRAINER')) mappedDesig = 'Lab Assistant';
+      else mappedDesig = 'Assistant Professor';
+
+      // Clean phone number (regex check)
+      let cleanedPhone = String(rawPhone).trim().replace(/[^\d+]/g, '');
+      if (cleanedPhone && cleanedPhone.length < 10) {
+        cleanedPhone = '';
+      }
+
+      return {
+        employee_id: String(rawEmployeeId).trim(),
+        name: String(rawName).trim(),
+        email: String(rawEmail).trim(),
+        phone: cleanedPhone,
+        department: mappedDept,
+        designation: mappedDesig,
+        qualification: row.qualification || 'M.Tech',
+        status: 'active',
+        joining_date: row.joining_date || row['Joining Date'] || new Date().toISOString().split('T')[0],
+        subjects: (row.subjects || row.Subjects || '').split('|').filter(Boolean),
+        labs: (row.labs || row.Labs || '').split('|').filter(Boolean),
+        dept_responsibility: row.dept_responsibility || row.Responsibilities || '',
+        shift: row.shift || 'Day',
+      };
+    })
     
     try {
       const res = await fetch('/api/import', {
@@ -307,46 +362,46 @@ export default function FacultyPage() {
             key="table" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="bg-white rounded-[32px] border border-slate-200 shadow-2xl shadow-indigo-900/5 flex flex-col"
           >
-            <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)] scrollbar-hide rounded-[32px]">
+            <div className="overflow-x-auto overflow-y-auto max-h-[640px] scrollbar-hide rounded-[32px]">
               <table className="w-full text-left border-separate border-spacing-0 min-w-[1200px]">
                 <thead className="sticky top-0 z-20">
                   <tr className="bg-slate-50/90 backdrop-blur-md">
-                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Photo</th>
-                    <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Name</th>
-                    <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Employee ID</th>
-                    <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Department</th>
-                    <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Designation</th>
-                    <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Phone Number</th>
-                    <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Email</th>
-                    <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Subjects</th>
-                    <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Labs</th>
-                    <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Responsibilities</th>
-                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Actions</th>
+                    <th className="px-8 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Photo</th>
+                    <th className="px-6 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Name</th>
+                    <th className="px-6 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Employee ID</th>
+                    <th className="px-6 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Department</th>
+                    <th className="px-6 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Designation</th>
+                    <th className="px-6 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Phone Number</th>
+                    <th className="px-6 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Email</th>
+                    <th className="px-6 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Subjects</th>
+                    <th className="px-6 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Labs</th>
+                    <th className="px-6 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Responsibilities</th>
+                    <th className="px-8 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {filteredFaculty.map((f, i) => (
                     <tr key={f.id} className="hover:bg-indigo-50/30 transition-colors group">
-                      <td className="px-8 py-4">
-                        <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden border border-slate-200">
+                      <td className="px-8 py-2.5">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 overflow-hidden border border-slate-200">
                           {f.photo_url ? (
                             <img src={f.photo_url} className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                            <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-base">
                               {f.name.charAt(0)}
                             </div>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-2.5">
                         <Link href={`/faculty/${f.id}`}>
                           <p className="font-black text-slate-900 hover:text-indigo-600 transition-colors cursor-pointer">{f.name}</p>
                         </Link>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-2.5">
                         <p className="text-[12px] font-bold text-slate-400 uppercase tracking-wider">{f.employee_id}</p>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-2.5">
                         <button 
                           onClick={() => setSelectedDept(f.department)}
                           className="px-3 py-1 bg-slate-100 text-slate-600 hover:bg-indigo-600 hover:text-white rounded-lg text-[11px] font-black uppercase tracking-wider transition-all"
@@ -354,29 +409,29 @@ export default function FacultyPage() {
                           {f.department}
                         </button>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-2.5">
                         <p className="text-[14px] font-bold text-slate-700">{f.designation}</p>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-2.5">
                         <p className="text-[13px] font-medium text-slate-600 flex items-center gap-2"><Phone size={12} /> {f.phone || 'N/A'}</p>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-2.5">
                         <p className="text-[13px] font-medium text-slate-600 flex items-center gap-2"><Mail size={12} /> {f.email}</p>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-2.5">
                         <div className="flex flex-wrap gap-1.5 max-w-[200px]">
                           {f.subjects?.map(s => <span key={s} className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded-md text-[10px] font-bold uppercase tracking-tighter">{s}</span>)}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-2.5">
                         <div className="flex flex-wrap gap-1.5 max-w-[200px]">
                           {f.labs?.map(l => <span key={l} className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-md text-[10px] font-bold uppercase tracking-tighter">{l}</span>)}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-2.5">
                         <p className="text-[13px] font-medium text-slate-500 truncate max-w-[150px]">{f.dept_responsibility || f.college_responsibility || 'N/A'}</p>
                       </td>
-                      <td className="px-8 py-4">
+                      <td className="px-8 py-2.5">
                         <div className="flex items-center justify-end gap-2">
                           <button onClick={(e) => { e.stopPropagation(); setEditItem(f); setShowModal(true) }} className="p-2 bg-white border border-slate-200 text-slate-400 hover:text-amber-600 hover:border-amber-100 rounded-xl transition-all"><Edit2 size={16} /></button>
                           <button onClick={(e) => { e.stopPropagation(); setDeleteId(f.id) }} className="p-2 bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-100 rounded-xl transition-all"><Trash2 size={16} /></button>

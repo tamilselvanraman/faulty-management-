@@ -19,26 +19,12 @@ const fadeUp = {
 
 const DEPT_COLORS = ['#0f172a', '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1']
 
-const mockStudentDept = [
-  { name: 'CSE', count: 620 },
-  { name: 'ECE', count: 480 },
-  { name: 'MECH', count: 390 },
-  { name: 'CIVIL', count: 310 },
-  { name: 'MBA', count: 240 },
-]
-
 const mockAttendance = [
   { month: 'Jan', attendance: 88 },
   { month: 'Feb', attendance: 82 },
   { month: 'Mar', attendance: 91 },
   { month: 'Apr', attendance: 87 },
   { month: 'May', attendance: 79 },
-]
-
-const taskPieData = [
-  { name: 'Completed', value: 42, color: '#059669' },
-  { name: 'In Progress', value: 18, color: '#64748b' },
-  { name: 'Pending', value: 12, color: '#94a3b8' },
 ]
 
 const recentActivity = [
@@ -67,23 +53,40 @@ interface KPICard {
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<KPICard[]>([
-    { label: 'Total Faculty', value: '—', change: '+4 this month', positive: true, icon: <Users size={24} />, gradient: 'from-indigo-500 via-purple-500 to-pink-500' },
-    { label: 'Active Students', value: '—', change: '+12% vs last year', positive: true, icon: <GraduationCap size={24} />, gradient: 'from-emerald-400 via-teal-500 to-cyan-500' },
-    { label: 'Total Classes', value: '—', change: 'Across 5 departments', positive: true, icon: <BookOpen size={24} />, gradient: 'from-orange-400 via-amber-500 to-rose-500' },
-    { label: 'Events This Month', value: '—', change: '4 upcoming', positive: true, icon: <CalendarDays size={24} />, gradient: 'from-blue-500 via-indigo-500 to-cyan-500' },
+    { label: 'Total Faculty', value: '—', change: 'Loading...', positive: true, icon: <Users size={24} />, gradient: 'from-indigo-500 via-purple-500 to-pink-500' },
+    { label: 'Active Students', value: '—', change: 'Loading...', positive: true, icon: <GraduationCap size={24} />, gradient: 'from-emerald-400 via-teal-500 to-cyan-500' },
+    { label: 'Total Classes', value: '—', change: 'Loading...', positive: true, icon: <BookOpen size={24} />, gradient: 'from-orange-400 via-amber-500 to-rose-500' },
+    { label: 'Events This Month', value: '—', change: 'Loading...', positive: true, icon: <CalendarDays size={24} />, gradient: 'from-blue-500 via-indigo-500 to-cyan-500' },
   ])
   const [loading, setLoading] = useState(true)
+  const [deptChartData, setDeptChartData] = useState<{ name: string; count: number }[]>([])
+  const [taskPieData, setTaskPieData] = useState([
+    { name: 'Completed', value: 0, color: '#059669' },
+    { name: 'In Progress', value: 0, color: '#64748b' },
+    { name: 'Pending', value: 0, color: '#94a3b8' },
+  ])
 
   useEffect(() => {
     fetch('/api/dashboard')
       .then(r => r.json())
       .then(({ data }) => {
         if (data) {
-          setStats(prev => [
-            { ...prev[0], value: data.faculty?.toString() ?? '—' },
-            { ...prev[1], value: data.students?.toLocaleString() ?? '—' },
-            { ...prev[2], value: data.classes?.toString() ?? '—' },
-            { ...prev[3], value: data.events?.toString() ?? '—' },
+          setStats([
+            { label: 'Total Faculty', value: data.faculty?.toLocaleString() ?? '0', change: `${data.faculty ?? 0} registered`, positive: true, icon: <Users size={24} />, gradient: 'from-indigo-500 via-purple-500 to-pink-500' },
+            { label: 'Active Students', value: data.students?.toLocaleString() ?? '0', change: `${data.students ?? 0} enrolled`, positive: true, icon: <GraduationCap size={24} />, gradient: 'from-emerald-400 via-teal-500 to-cyan-500' },
+            { label: 'Total Classes', value: data.classes?.toString() ?? '0', change: 'Across departments', positive: true, icon: <BookOpen size={24} />, gradient: 'from-orange-400 via-amber-500 to-rose-500' },
+            { label: 'Events This Month', value: data.events?.toString() ?? '0', change: 'This month', positive: true, icon: <CalendarDays size={24} />, gradient: 'from-blue-500 via-indigo-500 to-cyan-500' },
+          ])
+          // Chart data from real DB
+          if (data.faculty_by_dept?.length > 0) {
+            setDeptChartData(data.faculty_by_dept)
+          } else if (data.students_by_dept?.length > 0) {
+            setDeptChartData(data.students_by_dept)
+          }
+          setTaskPieData([
+            { name: 'Completed', value: data.tasks_completed ?? 0, color: '#059669' },
+            { name: 'In Progress', value: data.tasks_in_progress ?? 0, color: '#64748b' },
+            { name: 'Pending', value: data.tasks_pending ?? 0, color: '#94a3b8' },
           ])
         }
       })
@@ -140,43 +143,53 @@ export default function DashboardPage() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Bar Chart — Students by Dept */}
+        {/* Bar Chart — Faculty by Dept (real data) */}
         <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={5}
           className="lg:col-span-2 bg-surface rounded-[32px] border border-outline p-8 shadow-sm">
           <div className="flex items-center justify-between mb-10">
             <div>
-              <h3 className="text-xl font-black text-on-surface">Students by Department</h3>
-              <p className="text-sm font-medium text-on-surface-variant mt-1">Enrollment distribution 2024–25</p>
+              <h3 className="text-xl font-black text-on-surface">Faculty by Department</h3>
+              <p className="text-sm font-medium text-on-surface-variant mt-1">
+                {loading ? 'Loading...' : `${stats[0].value} total faculty across ${deptChartData.length} departments`}
+              </p>
             </div>
             <div className="p-3 bg-surface-variant rounded-2xl text-on-surface-variant border border-outline-variant">
               <BarChart3 size={20} />
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={280} minWidth={0}>
-            <BarChart data={mockStudentDept} barCategoryGap="30%">
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-outline)" vertical={false} opacity={0.2} />
-              <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700, fill: 'var(--color-on-surface-variant)' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fontWeight: 700, fill: 'var(--color-on-surface-variant)' }} axisLine={false} tickLine={false} />
-              <Tooltip
-                cursor={{ fill: 'var(--color-surface-variant)', radius: 12 }}
-                contentStyle={{ 
-                  backgroundColor: '#ffffff', 
-                  borderColor: 'var(--color-outline)', 
-                  borderRadius: 20, 
-                  fontSize: 12, 
-                  fontWeight: 700,
-                  boxShadow: '0 20px 50px rgba(0,0,0,0.05)',
-                  color: 'var(--color-on-surface)',
-                  border: '1px solid var(--color-outline)'
-                }}
-              />
-              <Bar dataKey="count" fill="var(--color-primary)" radius={[10, 10, 10, 10]}>
-                {mockStudentDept.map((_, i) => (
-                  <Cell key={i} fill={DEPT_COLORS[i % DEPT_COLORS.length]} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          {loading ? (
+            <div className="h-[280px] flex items-center justify-center">
+              <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+            </div>
+          ) : deptChartData.length === 0 ? (
+            <div className="h-[280px] flex items-center justify-center text-on-surface-variant font-bold text-sm">No department data available</div>
+          ) : (
+            <ResponsiveContainer width="100%" height={280} minWidth={0}>
+              <BarChart data={deptChartData} barCategoryGap="30%">
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-outline)" vertical={false} opacity={0.2} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700, fill: 'var(--color-on-surface-variant)' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fontWeight: 700, fill: 'var(--color-on-surface-variant)' }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  cursor={{ fill: 'var(--color-surface-variant)', radius: 12 }}
+                  contentStyle={{ 
+                    backgroundColor: '#ffffff', 
+                    borderColor: 'var(--color-outline)', 
+                    borderRadius: 20, 
+                    fontSize: 12, 
+                    fontWeight: 700,
+                    boxShadow: '0 20px 50px rgba(0,0,0,0.05)',
+                    color: 'var(--color-on-surface)',
+                    border: '1px solid var(--color-outline)'
+                  }}
+                />
+                <Bar dataKey="count" fill="var(--color-primary)" radius={[10, 10, 10, 10]}>
+                  {deptChartData.map((_, i) => (
+                    <Cell key={i} fill={DEPT_COLORS[i % DEPT_COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </motion.div>
 
         {/* Pie Chart — Task Status */}

@@ -38,15 +38,6 @@
 
   --font-sans: var(--font-inter), "Inter", sans-serif;
   
-  /* Spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-2xl: 48px;
-  --spacing-gutter: 24px;
-  --spacing-container-max: 1440px;
 
   /* Typography Scale */
   --font-size-h1: 2.5rem;
